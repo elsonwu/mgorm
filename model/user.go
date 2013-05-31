@@ -8,6 +8,12 @@ import (
 	// "reflect"
 )
 
+func UserModel() (user *User) {
+	user = new(User)
+	user.Init()
+	return
+}
+
 type User struct {
 	Document    `bson:",inline" json:",inline"`
 	FirstName   attr.String `bson:"first_name" json:"first_name"`
@@ -20,16 +26,11 @@ type User struct {
 }
 
 func (self *User) Init() *User {
-	if self.Document.collectionName == "" {
-		self.Document.collectionName = self.GetCollectionName()
+	if self.SetCollectionName(self.GetCollectionName()) {
 		self.Document.Doc = self
 	}
 
 	return self
-}
-
-func (self *User) Model() *User {
-	return self.Init()
 }
 
 func (self *User) GetCollectionName() string {

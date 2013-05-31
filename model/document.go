@@ -28,6 +28,15 @@ func (self *Document) Database() *Database {
 	return GetDatabase()
 }
 
+func (self *Document) SetCollectionName(name string) bool {
+	if self.collectionName == "" {
+		self.collectionName = name
+		return true
+	}
+
+	return false
+}
+
 func (self *Document) GetCollection() *mgo.Collection {
 	if self.collectionName == "" {
 		panic("the collection name is empty")

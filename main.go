@@ -9,12 +9,10 @@ import (
 )
 
 func main() {
-	fmt.Println(new(model.User).New())
-
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
-		data, _ := new(model.User).Model().Find()
-		data.LastName = "KKKK"
-		data.FirstName = "BBBB"
+		data, _ := model.UserModel().Find()
+		data.LastName = "TTTT"
+		data.FirstName = "EEEE"
 		err := data.Save()
 		if err != nil {
 			fmt.Println(err)
