@@ -1,4 +1,4 @@
-mgorm
+restapi
 =====
 
-simple orm based on mgo.
+simple rest api
