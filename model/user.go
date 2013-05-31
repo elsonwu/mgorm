@@ -1,10 +1,9 @@
 package model
 
 import (
-	"api/model/attr"
+	"github.com/elsonwu/restapi/model/attr"
 	// "labix.org/v2/mgo"
 	// "fmt"
-	"api/model/attr"
 	"labix.org/v2/mgo/bson"
 	// "reflect"
 )
@@ -44,6 +43,12 @@ func (self *User) AfterFind() {
 func (self *User) FindAll() (models []*User, err error) {
 	models = make([]*User, 10)
 	self.GetCollection().Find(bson.M{}).Limit(10).All(&models)
+	return
+}
+
+func (self *User) New() (model *User) {
+	model = new(User)
+	model.Init()
 	return
 }
 

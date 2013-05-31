@@ -2,7 +2,7 @@ package model
 
 import (
 	// "labix.org/v2/mgo"
-	"api/model/attr"
+	"github.com/elsonwu/restapi/model/attr"
 )
 
 type UserProfile struct {

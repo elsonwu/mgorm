@@ -1,8 +1,8 @@
 package model
 
 import (
-	"api/model/attr"
 	"fmt"
+	"github.com/elsonwu/restapi/model/attr"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"reflect"
