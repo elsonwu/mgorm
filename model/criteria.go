@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/elsonwu/restapi/model/attr"
-	"labix.org/v2/mgo/bson"
 )
 
 type Criteria struct {
@@ -12,7 +11,7 @@ type Criteria struct {
 }
 
 func (self *Criteria) GetLimit() int {
-	return int(self.limit)
+	return self.limit.Get()
 }
 
 func (self *Criteria) SetLimit(limit int) {
@@ -20,15 +19,15 @@ func (self *Criteria) SetLimit(limit int) {
 }
 
 func (self *Criteria) GetOffset() int {
-	return int(self.offset)
+	return self.offset.Get()
 }
 
 func (self *Criteria) SetOffset(offset int) {
 	self.offset = attr.Int(offset)
 }
 
-func (self *Criteria) GetConditions() bson.M {
-	return bson.M(self.conditions)
+func (self *Criteria) GetConditions() attr.Map {
+	return self.conditions
 }
 
 func (self *Criteria) SetConditions(conditions attr.Map) {
