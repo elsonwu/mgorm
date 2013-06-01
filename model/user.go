@@ -4,7 +4,7 @@ import (
 	"github.com/elsonwu/restapi/model/attr"
 	// "labix.org/v2/mgo"
 	// "fmt"
-	// "labix.org/v2/mgo/bson"
+	"labix.org/v2/mgo/bson"
 	// "reflect"
 )
 
@@ -69,7 +69,7 @@ func (self *User) Find(criteria Criteria) (*User, error) {
 }
 
 func (self *User) FindId(id string, criteria Criteria) (*User, error) {
-	criteria.AddCondition("_id", "==", self.Id)
+	criteria.AddCondition("_id", "==", bson.ObjectIdHex(id))
 	q := self.GetCollection().Find(criteria.GetConditions())
 	err := q.One(self)
 	self.Init()

@@ -12,8 +12,7 @@ import (
 func main() {
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 		criteria := model.NewCriteria()
-		criteria.SetLimit(2)
-		data, _ := model.UserModel().FindAll(criteria)
+		data, _ := model.UserModel().FindId("4f678f3791d4086b2a000003", criteria)
 		// err := data.Save()
 		// if err != nil {
 		// 	fmt.Println(err)
