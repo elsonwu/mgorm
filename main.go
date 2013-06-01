@@ -4,20 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/elsonwu/restapi/model"
+	"github.com/elsonwu/restapi/model/attr"
 	"net/http"
 	// "reflect"
 )
 
 func main() {
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
-		data, _ := model.UserModel().Find()
-		data.LastName = "TTTT"
-		data.FirstName = "EEEE"
-		err := data.Save()
-		if err != nil {
-			fmt.Println(err)
-			res.Write([]byte("ERROR"))
-		}
+		criteria := model.Criteria{}
+		criteria.AddCondition(attr.Map{})
+		data, _ := model.UserModel().Find(criteria)
+		// err := data.Save()
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	res.Write([]byte("ERROR"))
+		// }
 		output, err := json.Marshal(*data)
 		if err != nil {
 			fmt.Println("marshal error")

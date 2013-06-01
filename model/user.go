@@ -4,7 +4,7 @@ import (
 	"github.com/elsonwu/restapi/model/attr"
 	// "labix.org/v2/mgo"
 	// "fmt"
-	"labix.org/v2/mgo/bson"
+	// "labix.org/v2/mgo/bson"
 	// "reflect"
 )
 
@@ -41,9 +41,16 @@ func (self *User) AfterFind() {
 	self.DisplayName = self.FirstName + " " + self.LastName
 }
 
-func (self *User) FindAll() (models []*User, err error) {
-	models = make([]*User, 10)
-	self.GetCollection().Find(bson.M{}).Limit(10).All(&models)
+func (self *User) FindAll(criteria Criteria) (models []*User, err error) {
+	models = make([]*User, criteria.GetLimit())
+	q := self.GetCollection().Find(criteria.GetConditions())
+	q.Skip(criteria.GetOffset())
+	q.Limit(criteria.GetLimit())
+	q.All(&models)
+	for k, _ := range models {
+		models[k].Init()
+		models[k].AfterFind()
+	}
 	return
 }
 
@@ -53,15 +60,18 @@ func (self *User) New() (model *User) {
 	return
 }
 
-func (self *User) Find() (*User, error) {
-	err := self.GetCollection().Find(bson.M{}).One(self)
+func (self *User) Find(criteria Criteria) (*User, error) {
+	q := self.GetCollection().Find(criteria.GetConditions())
+	err := q.One(self)
 	self.Init()
 	self.AfterFind()
 	return self, err
 }
 
-func (self *User) FindId(id string) (*User, error) {
-	err := self.GetCollection().FindId(bson.ObjectIdHex(id)).One(self)
+func (self *User) FindId(id string, criteria Criteria) (*User, error) {
+	criteria.AddCondition(attr.Map{"_id": self.Id})
+	q := self.GetCollection().Find(criteria.GetConditions())
+	err := q.One(self)
 	self.Init()
 	self.AfterFind()
 	return self, err

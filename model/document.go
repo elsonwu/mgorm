@@ -45,15 +45,24 @@ func (self *Document) GetCollection() *mgo.Collection {
 	return self.Database().GetCollection(self.collectionName)
 }
 
+func (self *Document) GetFieldMapValue() attr.Map {
+	return attr.Map{}
+}
+
 func (self *Document) Save() error {
 	mapVal := make(bson.M)
 	typ := reflect.TypeOf(self.Doc)
 	val := reflect.ValueOf(self.Doc)
 	for i := 0; i < typ.Elem().NumField(); i++ {
 		f := typ.Elem().Field(i)
-		if !f.Anonymous && "_id" != f.Tag.Get("bson") {
+		if "_id" != f.Tag.Get("bson") {
+
 			fmt.Println(f.Tag.Get("bson"))
-			mapVal[f.Tag.Get("bson")] = val.Elem().Field(i).Interface()
+			if !f.Anonymous {
+				mapVal[f.Tag.Get("bson")] = val.Elem().Field(i).Interface()
+			} else {
+				fmt.Println(f.Type.NumField())
+			}
 		}
 	}
 
