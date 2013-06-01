@@ -69,7 +69,7 @@ func (self *User) Find(criteria Criteria) (*User, error) {
 }
 
 func (self *User) FindId(id string, criteria Criteria) (*User, error) {
-	criteria.AddCondition(attr.Map{"_id": self.Id})
+	criteria.AddCondition("_id", "==", self.Id)
 	q := self.GetCollection().Find(criteria.GetConditions())
 	err := q.One(self)
 	self.Init()
