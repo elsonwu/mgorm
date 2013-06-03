@@ -27,17 +27,54 @@ type User struct {
 
 func (self *User) Init() *User {
 	if self.SetCollectionName(self.GetCollectionName()) {
-		self.Document.Doc = self
+		self.Document.doc = self
+		self.UserDomain.owner = self
 	}
 
 	return self
+}
+
+func (self *User) New() (model *User) {
+	model = new(User)
+	model.Init()
+	model.Document.isNew = true
+	return
 }
 
 func (self *User) GetCollectionName() string {
 	return "user"
 }
 
+func (self *User) BeforeSave() bool {
+	if self.isNew {
+		self.UserDomain.InitDomain()
+	}
+
+	if self.Email == "" {
+		self.AddError("Email cannot be empty.")
+		return false
+	}
+
+	if self.UserDomain.Base == "" {
+		self.AddError("domain.base cannot be empty")
+		return false
+	}
+
+	if self.UserDomain.Extra == 0 {
+		self.AddError("domain.extra cannot be empty")
+		return false
+	}
+
+	if self.UserDomain.Domain == "" {
+		self.AddError("domain.domain cannot be empty")
+		return false
+	}
+
+	return true
+}
+
 func (self *User) AfterFind() {
+	self.Document.isNew = false
 	self.DisplayName = self.FirstName + " " + self.LastName
 }
 
@@ -51,12 +88,6 @@ func (self *User) FindAll(criteria Criteria) (models []*User, err error) {
 		models[k].Init()
 		models[k].AfterFind()
 	}
-	return
-}
-
-func (self *User) New() (model *User) {
-	model = new(User)
-	model.Init()
 	return
 }
 

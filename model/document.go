@@ -1,20 +1,29 @@
 package model
 
 import (
-	"fmt"
+	"errors"
+	//"fmt"
 	"github.com/elsonwu/restapi/model/attr"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
-	"reflect"
 )
 
+type ISubDocument interface {
+	Validate() bool
+}
+
 type IDocument interface {
+	ISubDocument
 	GetCollectionName() string
+	BeforeSave() bool
+	AfterSave()
 }
 
 type Document struct {
-	Doc            IDocument     `bson:"" json:"-"`
+	doc            IDocument     `bson:"" json:"-"`
 	collectionName string        `bson:",omitempty" json:"-"`
+	isNew          bool          `bson:",omitempty" json:"-"`
+	errors         []string      `bson:",omitempty" json:"-"`
 	Id             bson.ObjectId `bson:"_id,omitempty" json:"id,omitempty"`
 	Ctime          attr.Int      `bson:"ctime" json:"ctime"`
 	Mtime          attr.Int      `bson:"mtime" json:"mtime"`
@@ -37,6 +46,21 @@ func (self *Document) SetCollectionName(name string) bool {
 	return false
 }
 
+func (self *Document) GetCollectionName() string {
+	panic("please overrid this method in sub document")
+	return "please overrid this method in sub document"
+}
+
+func (self *Document) Validate() bool {
+	return true
+}
+
+func (self *Document) BeforeSave() bool {
+	return true
+}
+
+func (self *Document) AfterSave() {}
+
 func (self *Document) GetCollection() *mgo.Collection {
 	if self.collectionName == "" {
 		panic("the collection name is empty")
@@ -49,22 +73,43 @@ func (self *Document) GetFieldMapValue() attr.Map {
 	return attr.Map{}
 }
 
-func (self *Document) Save() error {
-	mapVal := make(bson.M)
-	typ := reflect.TypeOf(self.Doc)
-	val := reflect.ValueOf(self.Doc)
-	for i := 0; i < typ.Elem().NumField(); i++ {
-		f := typ.Elem().Field(i)
-		if "_id" != f.Tag.Get("bson") {
+func (self *Document) ClearErrors() {
+	self.errors = []string{}
+}
 
-			fmt.Println(f.Tag.Get("bson"))
-			if !f.Anonymous {
-				mapVal[f.Tag.Get("bson")] = val.Elem().Field(i).Interface()
-			} else {
-				fmt.Println(f.Type.NumField())
-			}
-		}
+func (self *Document) GetErrors() []string {
+	return self.errors
+}
+
+func (self *Document) AddError(err string) {
+	if self.errors == nil {
+		self.errors = []string{}
 	}
 
-	return self.GetCollection().Update(bson.M{"_id": self.Id}, bson.M{"$set": mapVal})
+	self.errors = append(self.errors, err)
+}
+
+func (self *Document) Save() bool {
+
+	if self.doc.BeforeSave() {
+		err := errors.New("")
+		if self.isNew {
+			err = self.GetCollection().Insert(self.doc)
+		} else {
+			err = self.GetCollection().Update(bson.M{"_id": self.Id}, self.doc)
+		}
+
+		if err != nil {
+			if e, ok := err.(error); ok && e.Error() != "" {
+				self.AddError(e.Error())
+			}
+
+			return false
+		}
+
+		self.doc.AfterSave()
+		return true
+	}
+
+	return false
 }
