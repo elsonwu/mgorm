@@ -20,7 +20,6 @@ type User struct {
 	Password    attr.String `bson:"password" json:"-"`
 	LastName    attr.String `bson:"last_name" json:"last_name"`
 	Email       attr.Email  `bson:"email" json:"email"`
-	DisplayName attr.String `bson:"display_name" json:"display_name"`
 	UserProfile UserProfile `bson:"profile" json:"profile"`
 	UserDomain  UserDomain  `bson:"domain" json:"domain"`
 }
@@ -77,7 +76,10 @@ func (self *User) BeforeSave() bool {
 
 func (self *User) AfterFind() {
 	self.Document.isNew = false
-	self.DisplayName = self.FirstName + " " + self.LastName
+}
+
+func (self *User) GetDisplayName() string {
+	return self.FirstName.Get() + " " + self.LastName.Get()
 }
 
 func (self *User) FindAll(criteria Criteria) (models []*User, err error) {
