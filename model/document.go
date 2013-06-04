@@ -20,10 +20,10 @@ type IDocument interface {
 }
 
 type Document struct {
-	doc            IDocument     `bson:"" json:"-"`
+	ErrorHandle    `bson:",inline" json:"-"`
+	doc            IDocument     `bson:",omitempty" json:"-"`
 	collectionName string        `bson:",omitempty" json:"-"`
 	isNew          bool          `bson:",omitempty" json:"-"`
-	errors         []string      `bson:",omitempty" json:"-"`
 	Id             bson.ObjectId `bson:"_id,omitempty" json:"id,omitempty"`
 	Ctime          attr.Int      `bson:"ctime" json:"ctime"`
 	Mtime          attr.Int      `bson:"mtime" json:"mtime"`
@@ -73,43 +73,27 @@ func (self *Document) GetFieldMapValue() attr.Map {
 	return attr.Map{}
 }
 
-func (self *Document) ClearErrors() {
-	self.errors = []string{}
-}
-
-func (self *Document) GetErrors() []string {
-	return self.errors
-}
-
-func (self *Document) AddError(err string) {
-	if self.errors == nil {
-		self.errors = []string{}
-	}
-
-	self.errors = append(self.errors, err)
-}
-
 func (self *Document) Save() bool {
 
-	if self.doc.BeforeSave() {
-		err := errors.New("")
-		if self.isNew {
-			err = self.GetCollection().Insert(self.doc)
-		} else {
-			err = self.GetCollection().Update(bson.M{"_id": self.Id}, self.doc)
-		}
-
-		if err != nil {
-			if e, ok := err.(error); ok && e.Error() != "" {
-				self.AddError(e.Error())
-			}
-
-			return false
-		}
-
-		self.doc.AfterSave()
-		return true
+	if !self.doc.Validate() || !self.doc.BeforeSave() {
+		return false
 	}
 
-	return false
+	err := errors.New("")
+	if self.isNew {
+		err = self.GetCollection().Insert(self.doc)
+	} else {
+		err = self.GetCollection().Update(bson.M{"_id": self.Id}, self.doc)
+	}
+
+	if err != nil {
+		if e, ok := err.(error); ok && e.Error() != "" {
+			self.AddError(e.Error())
+		}
+
+		return false
+	}
+
+	self.doc.AfterSave()
+	return true
 }

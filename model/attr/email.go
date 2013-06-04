@@ -11,6 +11,10 @@ func (self *Email) Validate() (boolean bool) {
 	return
 }
 
+func (self *Email) Get() string {
+	return string(*self)
+}
+
 func (self *Email) Set(v string) {
 	*self = Email(v)
 }

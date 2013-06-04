@@ -27,8 +27,14 @@ func main() {
 		// return
 
 		criteria := model.NewCriteria()
-		data, _ := model.UserModel().FindId("51acaeb619d443a040cf0fd1", criteria)
+		criteria.AddCondition("domain.domain", "==", "ew11")
+		data, err := model.UserModel().Find(criteria)
+		if err != nil {
+			fmt.Println("not found")
+			return
+		}
 		data.FirstName = "XXXXX"
+		fmt.Println(data)
 		if !data.Save() {
 			fmt.Println(data.GetErrors())
 			res.Write([]byte("ERROR"))

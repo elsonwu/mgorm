@@ -19,7 +19,7 @@ type User struct {
 	FirstName   attr.String `bson:"first_name" json:"first_name"`
 	Password    attr.String `bson:"password" json:"-"`
 	LastName    attr.String `bson:"last_name" json:"last_name"`
-	Email       attr.String `bson:"email" json:"email"`
+	Email       attr.Email  `bson:"email" json:"email"`
 	DisplayName attr.String `bson:"display_name" json:"display_name"`
 	UserProfile UserProfile `bson:"profile" json:"profile"`
 	UserDomain  UserDomain  `bson:"domain" json:"domain"`
@@ -45,29 +45,31 @@ func (self *User) GetCollectionName() string {
 	return "user"
 }
 
-func (self *User) BeforeSave() bool {
-	if self.isNew {
-		self.UserDomain.InitDomain()
+func (self *User) Validate() bool {
+	if !self.UserDomain.Validate() {
+		for _, err := range self.UserDomain.GetErrors() {
+			self.AddError(err)
+		}
+
+		return false
 	}
 
-	if self.Email == "" {
+	if self.Email.Get() == "" {
 		self.AddError("Email cannot be empty.")
 		return false
 	}
 
-	if self.UserDomain.Base == "" {
-		self.AddError("domain.base cannot be empty")
+	if !self.Email.Validate() {
+		self.AddError("Email is invalid")
 		return false
 	}
 
-	if self.UserDomain.Extra == 0 {
-		self.AddError("domain.extra cannot be empty")
-		return false
-	}
+	return true
+}
 
-	if self.UserDomain.Domain == "" {
-		self.AddError("domain.domain cannot be empty")
-		return false
+func (self *User) BeforeSave() bool {
+	if self.isNew {
+		self.UserDomain.InitDomain()
 	}
 
 	return true
