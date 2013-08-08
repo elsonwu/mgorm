@@ -1,26 +1,30 @@
 package model
 
+import (
+	"errors"
+)
+
 type IErrorHandle interface {
 	HasError() bool
 	AddError(err string)
-	GetErrors() []string
+	GetErrors() []error
 	ClearErrors()
 }
 
 type ErrorHandle struct {
-	errors []string `bson:",omitempty" json:"-"`
+	errors []error `bson:",omitempty" json:"-"`
 }
 
 func (self *ErrorHandle) AddError(err string) {
-	self.errors = append(self.errors, err)
+	self.errors = append(self.errors, errors.New(err))
 }
 
-func (self *ErrorHandle) GetErrors() []string {
+func (self *ErrorHandle) GetErrors() []error {
 	return self.errors
 }
 
 func (self *ErrorHandle) ClearErrors() {
-	self.errors = make([]string, 1)
+	self.errors = []error{}
 }
 
 func (self *ErrorHandle) HasError() bool {

@@ -19,25 +19,24 @@ func main() {
 		// 	fmt.Println(err)
 		// }
 
+		// user.Email = "elsonwu@126.com"
+		// if !model.Save(user) {
+		// 	fmt.Println("Save errors:", user.ErrorHandler().GetErrors())
+		// }
+
 		//Find list:
 		criteria := model.NewCriteria()
 		criteria.SetLimit(3)
 		criteria.AddSort("domain.domain", model.CriteriaSortDesc)
 		criteria.AddSort("domain.extra", model.CriteriaSortAsc)
-		//criteria.AddSort("email", model.CriteriaSortDesc)
-		query := model.FindAll(user, criteria)
-
-		// // iter := new(model.Iter)
-		// // iter.SetIter(query.Iter())
-		iter := query.Iter()
+		iter := model.FindAll(user, criteria).Iter()
 		users := make([]User, 3)
-		iter.All(&users)
 
-		// i := 0
-		// for iter.Next(user) {
-		// 	users[i] = *user
-		// 	i = i + 1
-		// }
+		i := 0
+		for iter.Next(user) {
+			users[i] = *user
+			i = i + 1
+		}
 
 		// fmt.Println(query)
 

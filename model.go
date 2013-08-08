@@ -13,25 +13,57 @@ type IModel interface {
 	Init()
 	GetId() bson.ObjectId
 	AfterFind()
+	Validate() bool
+	BeforeSave() bool
+	AfterSave()
 	Collection() *mgo.Collection
 	CollectionName() string
 	SetCollectionName(name string)
 	DB() *mgo.Database
 	HasInited() bool
+	GetErrors() []error
+	HasError() bool
+	ErrorHandler() *ErrorHandle
 }
 
 type Model struct {
+	errorHandler   *ErrorHandle  `bson:",inline" json:",inline"`
 	Id             bson.ObjectId `bson:"_id" json:"id"`
 	isNew          bool
 	collectionName string
 	inited         bool
 }
 
+func (self *Model) GetErrors() []error {
+	return self.errorHandler.GetErrors()
+}
+
+func (self *Model) HasError() bool {
+	return self.errorHandler.HasError()
+}
+
+func (self *Model) ErrorHandler() *ErrorHandle {
+	return self.errorHandler
+}
+
 func (self *Model) AfterFind() {
 	self.isNew = false
 }
 
+func (self *Model) Validate() bool {
+	return true
+}
+
+func (self *Model) BeforeSave() bool {
+	return true
+}
+
+func (self *Model) AfterSave() {
+	self.isNew = false
+}
+
 func (self *Model) Init() {
+	self.errorHandler = new(ErrorHandle)
 	self.inited = true
 }
 

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"errors"
+	// "errors"
 	// "fmt"
 	// "labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
@@ -64,30 +64,57 @@ func FindById(model IModel, id string) error {
 	return err
 }
 
-func Update(model IModel) error {
+func Update(model IModel) bool {
 	if model.IsNew() {
-		return errors.New("the model is a new record")
+		model.ErrorHandler().AddError("the model is a new record")
+		return false
 	}
 
 	if "" == model.GetId().Hex() {
-		return errors.New("the id is empty")
+		model.ErrorHandler().AddError("the id is empty")
+		return false
 	}
 
-	return model.Collection().UpdateId(model.GetId(), model)
+	err := model.Collection().UpdateId(model.GetId(), model)
+	if nil != err {
+		model.ErrorHandler().AddError(err.Error())
+		return false
+	}
+
+	return true
 }
 
-func Insert(model IModel) error {
+func Insert(model IModel) bool {
 	if !model.IsNew() {
-		return errors.New("the model is not a new record")
+		model.ErrorHandler().AddError("the model is not a new record")
+		return false
 	}
 
-	return model.Collection().Insert(model)
+	err := model.Collection().Insert(model)
+	if nil != err {
+		model.ErrorHandler().AddError(err.Error())
+		return false
+	}
+
+	return true
 }
 
-func Save(model IModel) error {
-	if model.IsNew() {
-		return Insert(model)
-	} else {
-		return Update(model)
+func Save(model IModel) bool {
+
+	if !model.BeforeSave() {
+		return false
 	}
+
+	res := false
+	if model.IsNew() {
+		res = Insert(model)
+	} else {
+		res = Update(model)
+	}
+
+	if res {
+		model.AfterSave()
+	}
+
+	return res
 }
