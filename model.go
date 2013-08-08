@@ -14,7 +14,7 @@ type IModel interface {
 	Init()
 	GetId() bson.ObjectId
 	AfterFind()
-	BeforeSave() bool
+	BeforeSave() error
 	AfterSave()
 	Collection() *mgo.Collection
 	CollectionName() string
@@ -43,14 +43,14 @@ func (self *Model) Validate() bool {
 	return true
 }
 
-func (self *Model) BeforeSave() bool {
+func (self *Model) BeforeSave() error {
 	err := self.Emit("BeforeSave")
 	if nil != err {
 		self.AddError(err.Error())
-		return false
+		return err
 	}
 
-	return true
+	return nil
 }
 
 func (self *Model) AfterSave() {
