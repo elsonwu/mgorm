@@ -2,7 +2,7 @@ package main
 
 import (
 	// "fmt"
-	"github.com/elsonwu/restapi/model"
+	"github.com/elsonwu/mgorm/model"
 	"strconv"
 	//"labix.org/v2/mgo"
 	//"labix.org/v2/mgo/bson"

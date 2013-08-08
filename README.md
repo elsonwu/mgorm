@@ -3,7 +3,7 @@
     package main
 
     import (
-		"github.com/elsonwu/restapi/model"
+		"github.com/elsonwu/mgorm/model"
 	)
 
 	type User struct {

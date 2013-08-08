@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/elsonwu/restapi/model/attr"
+	"github.com/elsonwu/mgorm/model/attr"
 )
 
 func NewCriteria() *Criteria {
