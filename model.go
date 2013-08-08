@@ -9,6 +9,7 @@ import (
 type Map map[string]interface{}
 
 type IModel interface {
+	IErrorHandle
 	IsNew() bool
 	Init()
 	GetId() bson.ObjectId
@@ -21,29 +22,14 @@ type IModel interface {
 	SetCollectionName(name string)
 	DB() *mgo.Database
 	HasInited() bool
-	GetErrors() []error
-	HasError() bool
-	ErrorHandler() *ErrorHandle
 }
 
 type Model struct {
-	errorHandler   *ErrorHandle  `bson:",inline" json:",inline"`
+	ErrorHandle    `bson:",inline" json:",inline"`
 	Id             bson.ObjectId `bson:"_id" json:"id"`
 	isNew          bool
 	collectionName string
 	inited         bool
-}
-
-func (self *Model) GetErrors() []error {
-	return self.errorHandler.GetErrors()
-}
-
-func (self *Model) HasError() bool {
-	return self.errorHandler.HasError()
-}
-
-func (self *Model) ErrorHandler() *ErrorHandle {
-	return self.errorHandler
 }
 
 func (self *Model) AfterFind() {
@@ -51,6 +37,7 @@ func (self *Model) AfterFind() {
 }
 
 func (self *Model) Validate() bool {
+	self.ClearErrors()
 	return true
 }
 
@@ -63,7 +50,6 @@ func (self *Model) AfterSave() {
 }
 
 func (self *Model) Init() {
-	self.errorHandler = new(ErrorHandle)
 	self.inited = true
 }
 

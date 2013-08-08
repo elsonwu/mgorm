@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	// "fmt"
+	"fmt"
 	"github.com/elsonwu/mgorm"
 	// "errors"
 	"net/http"
@@ -31,14 +31,16 @@ func main() {
 		criteria.AddSort("domain.extra", mgorm.CriteriaSortAsc)
 		iter := mgorm.FindAll(user, criteria).Iter()
 		users := make([]User, 3)
-
 		i := 0
 		for iter.Next(user) {
 			users[i] = *user
 			i = i + 1
 		}
 
-		// fmt.Println(query)
+		fmt.Println(users[0].GetErrors())
+		fmt.Println(users[0].HasErrors())
+		users[0].ClearErrors()
+		fmt.Println(users[0].HasErrors())
 
 		//user.Email = "test@126.com"
 		// err = mgorm.Save(user)

@@ -5,7 +5,7 @@ import (
 )
 
 type IErrorHandle interface {
-	HasError() bool
+	HasErrors() bool
 	AddError(err string)
 	GetErrors() []error
 	ClearErrors()
@@ -27,6 +27,6 @@ func (self *ErrorHandle) ClearErrors() {
 	self.errors = []error{}
 }
 
-func (self *ErrorHandle) HasError() bool {
-	return !(self.errors == nil || 0 == len(self.errors))
+func (self *ErrorHandle) HasErrors() bool {
+	return 0 < len(self.errors)
 }

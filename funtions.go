@@ -66,18 +66,18 @@ func FindById(model IModel, id string) error {
 
 func Update(model IModel) bool {
 	if model.IsNew() {
-		model.ErrorHandler().AddError("the model is a new record")
+		model.AddError("the model is a new record")
 		return false
 	}
 
 	if "" == model.GetId().Hex() {
-		model.ErrorHandler().AddError("the id is empty")
+		model.AddError("the id is empty")
 		return false
 	}
 
 	err := model.Collection().UpdateId(model.GetId(), model)
 	if nil != err {
-		model.ErrorHandler().AddError(err.Error())
+		model.AddError(err.Error())
 		return false
 	}
 
@@ -86,13 +86,13 @@ func Update(model IModel) bool {
 
 func Insert(model IModel) bool {
 	if !model.IsNew() {
-		model.ErrorHandler().AddError("the model is not a new record")
+		model.AddError("the model is not a new record")
 		return false
 	}
 
 	err := model.Collection().Insert(model)
 	if nil != err {
-		model.ErrorHandler().AddError(err.Error())
+		model.AddError(err.Error())
 		return false
 	}
 
