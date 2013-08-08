@@ -1,7 +1,7 @@
 package mgorm
 
 import (
-	"fmt"
+	// "fmt"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
@@ -74,12 +74,7 @@ func (self *Model) CollectionName() string {
 }
 
 func (self *Model) DB() *mgo.Database {
-	session, err := mgo.Dial("127.0.0.1")
-	if err != nil {
-		fmt.Println("connect error:", err)
-	}
-
-	return session.DB("testcn10")
+	return db
 }
 
 func (self *Model) Collection() *mgo.Collection {

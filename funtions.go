@@ -7,6 +7,19 @@ import (
 	"labix.org/v2/mgo/bson"
 )
 
+var session *mgo.Session
+var db *mgo.Database
+
+func InitDB(connectString, dbName string) error {
+	session, err := mgo.Dial(connectString)
+	if err != nil {
+		return err
+	}
+
+	db = session.DB(dbName)
+	return nil
+}
+
 func FindAll(model IModel, criteria *Criteria) *Query {
 	if !model.HasInited() {
 		model.Init()

@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	mgorm.InitDB("127.0.0.1", "testcn10")
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 
 		user := new(User)
