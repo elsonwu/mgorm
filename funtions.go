@@ -1,7 +1,7 @@
 package mgorm
 
 import (
-	// "errors"
+	"errors"
 	// "fmt"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
@@ -65,6 +65,17 @@ func FindAll(model IModel, criteria *Criteria) *Query {
 	query := new(Query)
 	query.SetQuery(q)
 	return query
+}
+
+func Find(model IModel, criteria *Criteria) error {
+	criteria.SetLimit(1)
+	iter := FindAll(model, criteria).Iter()
+	defer iter.Close()
+	if iter.Next(model) {
+		return nil
+	}
+
+	return errors.New("Not found")
 }
 
 func FindById(model IModel, id string) error {
