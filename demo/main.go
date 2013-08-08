@@ -14,22 +14,22 @@ func main() {
 		user := new(User)
 
 		//Find one:
-		// err := model.FindById(user, "51ffc45fad51987c28276e55")
+		// err := mgorm.FindById(user, "51ffc45fad51987c28276e55")
 		// if nil != err {
 		// 	fmt.Println(err)
 		// }
 
 		// user.Email = "elsonwu@126.com"
-		// if !model.Save(user) {
+		// if !mgorm.Save(user) {
 		// 	fmt.Println("Save errors:", user.ErrorHandler().GetErrors())
 		// }
 
 		//Find list:
-		criteria := model.NewCriteria()
+		criteria := mgorm.NewCriteria()
 		criteria.SetLimit(3)
-		criteria.AddSort("domain.domain", model.CriteriaSortDesc)
-		criteria.AddSort("domain.extra", model.CriteriaSortAsc)
-		iter := model.FindAll(user, criteria).Iter()
+		criteria.AddSort("domain.domain", mgorm.CriteriaSortDesc)
+		criteria.AddSort("domain.extra", mgorm.CriteriaSortAsc)
+		iter := mgorm.FindAll(user, criteria).Iter()
 		users := make([]User, 3)
 
 		i := 0
@@ -41,7 +41,7 @@ func main() {
 		// fmt.Println(query)
 
 		//user.Email = "test@126.com"
-		// err = model.Save(user)
+		// err = mgorm.Save(user)
 		// if nil != err {
 		// 	fmt.Println(err)
 		// }

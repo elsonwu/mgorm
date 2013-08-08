@@ -1,4 +1,4 @@
-package model
+package mgorm
 
 import (
 	// "errors"

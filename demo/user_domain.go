@@ -21,11 +21,11 @@ func (self *UserDomain) SetOwner(user *User) {
 
 func (self *UserDomain) initDomain() bool {
 	if self.owner.IsNew() {
-		criteria := model.NewCriteria()
+		criteria := mgorm.NewCriteria()
 		criteria.AddCond("domain.base", "==", self.Base)
-		criteria.AddSort("domain.domain", model.CriteriaSortDesc)
+		criteria.AddSort("domain.domain", mgorm.CriteriaSortDesc)
 		user := new(User)
-		query := model.FindAll(user, criteria)
+		query := mgorm.FindAll(user, criteria)
 		query.One(user)
 
 		if user.Domain.Extra == 0 {

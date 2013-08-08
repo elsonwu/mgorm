@@ -1,4 +1,4 @@
-package model
+package mgorm
 
 import (
 	"labix.org/v2/mgo"

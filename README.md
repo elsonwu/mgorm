@@ -3,11 +3,11 @@
     package main
 
     import (
-		"github.com/elsonwu/mgorm/model"
+		"github.com/elsonwu/mgorm"
 	)
 
 	type User struct {
-		model.Model `bson:",inline" json:",inline"` //embed all base methods
+		mgorm.Model `bson:",inline" json:",inline"` //embed all base methods
 		Username    string      `bson:"username" json:"username"`
 		Email       string      `bson:"email" json:"email" rules:"email"`
 	}
@@ -25,19 +25,19 @@
 #Find one
 
     user := new(User)
-    err := model.FindById(user, "51ffc45fad51987c28276e55")
+    err := mgorm.FindById(user, "51ffc45fad51987c28276e55")
     if nil != err {
 	    fmt.Println(err)
     }
     
 #Find List
 
-	criteria := model.NewCriteria()
+	criteria := mgorm.NewCriteria()
 	criteria.SetLimit(3)
 	criteria.SetOffset(10)
 	criteria.SetSelect([]string{"email"})
-	criteria.AddSort("username", model.CriteriaSortDesc)
-	iter := model.FindAll(user, criteria).Iter()
+	criteria.AddSort("username", mgorm.CriteriaSortDesc)
+	iter := mgorm.FindAll(user, criteria).Iter()
 	users := make([]User, 3)
 	iter.All(&users)
 	fmt.Println(users)
@@ -45,7 +45,7 @@
 #Save One
 
     user.Email = "test@gmail.com"
-	err = model.Save(user)
+	err = mgorm.Save(user)
 	if nil != err {
 		fmt.Println(err)
 	}	
