@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/elsonwu/mgorm"
-	// "errors"
 	"net/http"
 )
 
@@ -38,10 +38,17 @@ func main() {
 			i = i + 1
 		}
 
-		fmt.Println(users[0].GetErrors())
-		fmt.Println(users[0].HasErrors())
-		users[0].ClearErrors()
-		fmt.Println(users[0].HasErrors())
+		users[0].On("test", func(model mgorm.IModel) error {
+			return nil
+		})
+
+		users[0].On("test", func(model mgorm.IModel) error {
+			return errors.New("this is a test2")
+		})
+
+		fmt.Println(users[0].Emit("test"))
+		//fmt.Println("validate:", users[0].Validate())
+		//fmt.Println("errors:", users[0].GetErrors())
 
 		//user.Email = "test@126.com"
 		// err = mgorm.Save(user)

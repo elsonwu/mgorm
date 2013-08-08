@@ -3,7 +3,7 @@ package mgorm
 import (
 	// "errors"
 	// "fmt"
-	// "labix.org/v2/mgo"
+	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 )
 
@@ -18,6 +18,10 @@ func InitDB(connectString, dbName string) error {
 
 	db = session.DB(dbName)
 	return nil
+}
+
+func DB() *mgo.Database {
+	return db
 }
 
 func FindAll(model IModel, criteria *Criteria) *Query {

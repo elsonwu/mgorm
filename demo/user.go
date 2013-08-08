@@ -1,7 +1,9 @@
 package main
 
 import (
+	// "fmt"
 	"github.com/elsonwu/mgorm"
+	// "reflect"
 )
 
 type User struct {
@@ -10,9 +12,8 @@ type User struct {
 	FirstName   string      `bson:"first_name" json:"first_name"`
 	Password    string      `bson:"password" json:"-"`
 	LastName    string      `bson:"last_name" json:"last_name"`
-	Email       string      `bson:"email" json:"email" rules:"email"`
+	Email       string      `bson:"email" json:"email"`
 	Profile     UserProfile `bson:"profile" json:"profile"`
-	Domain      UserDomain  `bson:"domain" json:"domain"`
 }
 
 func (self *User) Init() {
@@ -22,4 +23,37 @@ func (self *User) Init() {
 
 func (self *User) CollectionName() string {
 	return "user"
+}
+
+func (self *User) Validate() bool {
+	if !self.Model.Validate() {
+		return false
+	}
+
+	if !self.Profile.Validate() {
+		return false
+	}
+
+	// refType := reflect.TypeOf(self)
+	// refValue := reflect.ValueOf(self)
+	// if refType.Kind() == reflect.Ptr {
+	// 	refType = refType.Elem()
+	// 	refValue = refValue.Elem()
+	// }
+
+	// numField := refType.NumField()
+	// for i := 0; i < numField; i++ {
+	// 	field := refType.Field(i)
+	// 	if reflect.Struct != field.Type.Kind() || "Model" == field.Name {
+	// 		continue
+	// 	}
+
+	// 	if v, ok := refValue.Field(i).Interface().(mgorm.IValidater); ok {
+	// 		if !v.Validate() {
+	// 			return false
+	// 		}
+	// 	}
+	// }
+
+	return true
 }
