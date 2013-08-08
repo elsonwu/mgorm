@@ -6,6 +6,8 @@ import (
 	"labix.org/v2/mgo/bson"
 )
 
+type Map map[string]interface{}
+
 type IModel interface {
 	IsNew() bool
 	Init()

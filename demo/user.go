@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/elsonwu/mgorm/model"
+	"github.com/elsonwu/mgorm"
 )
 
 type User struct {
