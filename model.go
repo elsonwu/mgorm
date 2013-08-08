@@ -24,7 +24,6 @@ type IModel interface {
 }
 
 type Model struct {
-	IValidater
 	ErrorHandle    `bson:",inline" json:",inline"`
 	Event          `bson:",inline" json:",inline"`
 	Id             bson.ObjectId `bson:"_id" json:"id"`
@@ -44,13 +43,7 @@ func (self *Model) Validate() bool {
 }
 
 func (self *Model) BeforeSave() error {
-	err := self.Emit("BeforeSave")
-	if nil != err {
-		self.AddError(err.Error())
-		return err
-	}
-
-	return nil
+	return self.Emit("BeforeSave")
 }
 
 func (self *Model) AfterSave() {

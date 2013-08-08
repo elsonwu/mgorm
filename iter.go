@@ -27,3 +27,7 @@ func (self *Iter) Next(model IModel) bool {
 func (self *Iter) All(models interface{}) {
 	self.iter.All(models)
 }
+
+func (self *Iter) Close() error {
+	return self.iter.Close()
+}
