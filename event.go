@@ -1,5 +1,9 @@
 package mgorm
 
+import (
+	"strings"
+)
+
 type EventFn func() error
 
 type IEvent interface {
@@ -16,10 +20,12 @@ func (self *Event) On(event string, fn EventFn) {
 		self.events = make(map[string][]EventFn)
 	}
 
+	event = strings.ToLower(event)
 	self.events[event] = append(self.events[event], fn)
 }
 
 func (self *Event) Emit(event string) error {
+	event = strings.ToLower(event)
 	if nil != self.events {
 		length := len(self.events[event])
 		for i := 0; i < length; i++ {
