@@ -1,49 +1,82 @@
 package model
 
 import (
-	// "fmt"
 	"github.com/elsonwu/restapi/model/attr"
 )
 
-func NewCriteria() Criteria {
-	criteria := Criteria{}
+func NewCriteria() *Criteria {
+	criteria := new(Criteria)
 	criteria.conditions = attr.Map{}
 	return criteria
 }
 
+const CriteriaSortDesc int = -1
+const CriteriaSortAsc int = 1
+
 type Criteria struct {
-	limit      attr.Int
-	offset     attr.Int
-	sort       attr.Map
+	selects    []string
+	limit      int
+	offset     int
 	conditions attr.Map
+	sort       map[string]int
+}
+
+func (self *Criteria) AddSort(field string, sort int) *Criteria {
+	if nil == self.sort {
+		self.sort = map[string]int{}
+	}
+
+	self.sort[field] = sort
+	return self
+}
+
+func (self *Criteria) SetSort(sort map[string]int) *Criteria {
+	self.sort = sort
+	return self
+}
+
+func (self *Criteria) GetSort() map[string]int {
+	return self.sort
+}
+
+func (self *Criteria) SetSelect(selects []string) *Criteria {
+	self.selects = selects
+	return self
+}
+
+func (self *Criteria) GetSelect() []string {
+	return self.selects
 }
 
 func (self *Criteria) GetLimit() int {
-	return self.limit.Get()
+	return self.limit
 }
 
-func (self *Criteria) SetLimit(limit int) {
-	self.limit = attr.Int(limit)
+func (self *Criteria) SetLimit(limit int) *Criteria {
+	self.limit = limit
+	return self
 }
 
 func (self *Criteria) GetOffset() int {
-	return self.offset.Get()
+	return self.offset
 }
 
-func (self *Criteria) SetOffset(offset int) {
-	self.offset = attr.Int(offset)
+func (self *Criteria) SetOffset(offset int) *Criteria {
+	self.offset = offset
+	return self
 }
 
 func (self *Criteria) GetConditions() attr.Map {
 	return self.conditions
 }
 
-func (self *Criteria) SetConditions(conditions attr.Map) {
+func (self *Criteria) SetConditions(conditions attr.Map) *Criteria {
 	self.conditions = conditions
+	return self
 }
 
 //add more opt later when it does need.
-func (self *Criteria) AddCondition(field, opt string, value interface{}) {
+func (self *Criteria) AddCond(field, opt string, value interface{}) *Criteria {
 	if opt == "==" {
 		self.conditions[field] = value
 	} else if opt == "!=" {
@@ -82,4 +115,6 @@ func (self *Criteria) AddCondition(field, opt string, value interface{}) {
 			self.conditions["$or"] = or
 		}
 	}
+
+	return self
 }
