@@ -38,11 +38,11 @@ func main() {
 			i = i + 1
 		}
 
-		users[0].On("test", func(model mgorm.IModel) error {
+		users[0].On("test", func() error {
 			return nil
 		})
 
-		users[0].On("test", func(model mgorm.IModel) error {
+		users[0].On("test", func() error {
 			return errors.New("this is a test2")
 		})
 

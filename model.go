@@ -6,17 +6,6 @@ import (
 	"labix.org/v2/mgo/bson"
 )
 
-type Map map[string]interface{}
-
-type IValidater interface {
-	Validate() bool
-}
-
-type IEvent interface {
-	On(event string, fn func(IModel) error)
-	Emit(event string) error
-}
-
 type IModel interface {
 	IErrorHandle
 	IValidater
@@ -35,15 +24,17 @@ type IModel interface {
 }
 
 type Model struct {
+	IValidater
 	ErrorHandle    `bson:",inline" json:",inline"`
+	Event          `bson:",inline" json:",inline"`
 	Id             bson.ObjectId `bson:"_id" json:"id"`
 	isNew          bool
 	collectionName string
 	inited         bool
-	events         map[string][]func(IModel) error
 }
 
 func (self *Model) AfterFind() {
+	self.Emit("AfterFind")
 	self.isNew = false
 }
 
@@ -52,33 +43,18 @@ func (self *Model) Validate() bool {
 	return true
 }
 
-func (self *Model) On(event string, fn func(IModel) error) {
-	if nil == self.events {
-		self.events = make(map[string][]func(IModel) error)
-	}
-
-	self.events[event] = append(self.events[event], fn)
-}
-
-func (self *Model) Emit(event string) error {
-	if nil != self.events {
-		length := len(self.events[event])
-		for i := 0; i < length; i++ {
-			err := self.events[event][i](self)
-			if nil != err {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
 func (self *Model) BeforeSave() bool {
+	err := self.Emit("BeforeSave")
+	if nil != err {
+		self.AddError(err.Error())
+		return false
+	}
+
 	return true
 }
 
 func (self *Model) AfterSave() {
+	self.Emit("AfterSave")
 	self.isNew = false
 }
 
