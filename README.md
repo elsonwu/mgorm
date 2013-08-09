@@ -32,6 +32,7 @@ All model are struct type
     }
     
 #Find One
+
 	user := new(User)
     criteria := mgorm.NewCriteria()
     criteria.AddCond("username", "==", "elsonwu")
@@ -52,12 +53,12 @@ All model are struct type
 #Save One
 
     user.Email = "test@gmail.com"
-	err = mgorm.Save(user)
-	if nil != err {
+	if !mgorm.Save(user) {
 		fmt.Println(err)
 	}	
 	
 #Error
+
 	user.AddError("Test the error")
 
 	if !mgorm.Save(user) {
@@ -67,6 +68,7 @@ All model are struct type
 	
 #Event
 ##built-in event
+
 	user.Username = "Admin"
 	
 	//The event name is case insensitive, so here you can also use "beforesave"
@@ -82,10 +84,9 @@ All model are struct type
 		//[You cannot use Admin]
 	}
 	
-	
 ##Customized event
+
 	//You can emit the event manually
-	
 	user.Username = "Admin"
 	user.On("TestEvent", func() error {
 	    if "Admin" == user.Username {
