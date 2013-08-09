@@ -129,6 +129,10 @@ func Insert(model IModel) bool {
 
 func Save(model IModel) bool {
 
+	if !model.Validate() {
+		return false
+	}
+
 	err := model.BeforeSave()
 	if nil != err {
 		model.AddError(err.Error())
