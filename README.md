@@ -47,14 +47,14 @@ All model are struct type
 	criteria.SetSelect([]string{"email"})
 	criteria.AddSort("username", mgorm.CriteriaSortDesc)
 	users := make([]User, 3)
-	mgorm.FindAll(user, criteria).All(&users)
+	mgorm.FindAll(user, criteria).Iter().All(&users)
 	fmt.Println(users)
 	
 #Save One
 
     user.Email = "test@gmail.com"
 	if !mgorm.Save(user) {
-		fmt.Println(err)
+		fmt.Println(user.GetErrors())
 	}	
 	
 #Error

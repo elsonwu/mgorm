@@ -10,14 +10,8 @@ type Query struct {
 	iter  *Iter
 }
 
-func (self *Query) GetQuery() *mgo.Query {
+func (self *Query) Query() *mgo.Query {
 	return self.query
-}
-
-func (self *Query) SetQuery(query *mgo.Query) {
-	self.query = query
-	self.iter = new(Iter)
-	self.iter.SetIter(self.query.Iter())
 }
 
 func (self *Query) One(model IModel) {
@@ -25,6 +19,12 @@ func (self *Query) One(model IModel) {
 }
 
 func (self *Query) Iter() *Iter {
+	if nil == self.iter {
+		self.iter = new(Iter)
+		self.iter.query = self
+		self.iter.iter = self.query.Iter()
+	}
+
 	return self.iter
 }
 

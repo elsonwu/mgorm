@@ -5,11 +5,8 @@ import (
 )
 
 type Iter struct {
-	iter *mgo.Iter
-}
-
-func (self *Iter) SetIter(iter *mgo.Iter) {
-	self.iter = iter
+	iter  *mgo.Iter
+	query *Query
 }
 
 func (self *Iter) Next(model IModel) bool {

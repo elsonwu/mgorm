@@ -63,7 +63,7 @@ func FindAll(model IModel, criteria *Criteria) *Query {
 	}
 
 	query := new(Query)
-	query.SetQuery(q)
+	query.query = q
 	return query
 }
 
@@ -82,7 +82,7 @@ func FindById(model IModel, id string) error {
 	criteria := NewCriteria()
 	criteria.AddCond("_id", "==", bson.ObjectIdHex(id))
 	criteria.SetLimit(1)
-	err := FindAll(model, criteria).GetQuery().One(model)
+	err := FindAll(model, criteria).Query().One(model)
 
 	if nil == err {
 		model.Init()
