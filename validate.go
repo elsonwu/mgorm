@@ -5,21 +5,21 @@ import (
 	"reflect"
 )
 
-type IValidater interface {
+type IValidator interface {
 	Validate() bool
 }
 
-func NewValidater(errorHandler IErrorHandler) *Validater {
-	validater := new(Validater)
+func NewValidator(errorHandler IErrorHandler) IValidator {
+	validater := new(Validator)
 	validater.errorHandler = errorHandler
 	return validater
 }
 
-type Validater struct {
+type Validator struct {
 	errorHandler IErrorHandler
 }
 
-func (self *Validater) Validate() bool {
+func (self *Validator) Validate() bool {
 	refType := reflect.TypeOf(self.errorHandler)
 	refValue := reflect.ValueOf(self.errorHandler)
 
@@ -36,7 +36,7 @@ func (self *Validater) Validate() bool {
 			continue
 		}
 
-		if v, ok := refValue.Field(i).Interface().(IValidater); ok {
+		if v, ok := refValue.Field(i).Interface().(IValidator); ok {
 			if !v.Validate() {
 				return false
 			}

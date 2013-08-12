@@ -9,7 +9,7 @@ import (
 
 type IModel interface {
 	IErrorHandler
-	IValidater
+	IValidator
 	IEvent
 	IsNew() bool
 	Init()
@@ -47,7 +47,7 @@ func (self *Model) Validate() bool {
 		self.AddError(err.Error())
 	}
 
-	if !NewValidater(self.obj).Validate() {
+	if !NewValidator(self.obj).Validate() {
 		return false
 	}
 
