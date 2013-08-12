@@ -1,6 +1,7 @@
 package mgorm
 
 import (
+	// "fmt"
 	"reflect"
 )
 
@@ -21,6 +22,7 @@ type Validater struct {
 func (self *Validater) Validate() bool {
 	refType := reflect.TypeOf(self.errorHandler)
 	refValue := reflect.ValueOf(self.errorHandler)
+
 	if refType.Kind() == reflect.Ptr {
 		refType = refType.Elem()
 		refValue = refValue.Elem()
@@ -29,18 +31,15 @@ func (self *Validater) Validate() bool {
 	numField := refType.NumField()
 	for i := 0; i < numField; i++ {
 		field := refType.Field(i)
-		if reflect.Struct != field.Type.Kind() || "Model" == field.Name {
+
+		if reflect.Ptr != field.Type.Kind() {
 			continue
 		}
 
-		reFiled := reflect.New(refValue.Field(i).Type())
-		if !reFiled.MethodByName("Validate").IsValid() {
-			continue
-		}
-
-		res := reFiled.MethodByName("Validate").Call([]reflect.Value{})
-		if res[0].Bool() {
-			return false
+		if v, ok := refValue.Field(i).Interface().(IValidater); ok {
+			if !v.Validate() {
+				return false
+			}
 		}
 	}
 
