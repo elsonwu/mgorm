@@ -2,7 +2,7 @@ package mgorm
 
 import ()
 
-func NewCriteria() *Criteria {
+func NewCriteria() ICriteria {
 	criteria := new(Criteria)
 	criteria.conditions = Map{}
 	return criteria
@@ -10,6 +10,21 @@ func NewCriteria() *Criteria {
 
 const CriteriaSortDesc int = -1
 const CriteriaSortAsc int = 1
+
+type ICriteria interface {
+	AddSort(field string, sort int) ICriteria
+	SetSort(sort map[string]int) ICriteria
+	GetSort() map[string]int
+	SetSelect(selects []string) ICriteria
+	GetSelect() []string
+	GetLimit() int
+	SetLimit(limit int) ICriteria
+	GetOffset() int
+	SetOffset(offset int) ICriteria
+	GetConditions() Map
+	SetConditions(conditions Map) ICriteria
+	AddCond(field, opt string, value interface{}) ICriteria
+}
 
 type Criteria struct {
 	selects    []string
@@ -19,7 +34,7 @@ type Criteria struct {
 	sort       map[string]int
 }
 
-func (self *Criteria) AddSort(field string, sort int) *Criteria {
+func (self *Criteria) AddSort(field string, sort int) ICriteria {
 	if nil == self.sort {
 		self.sort = map[string]int{}
 	}
@@ -28,7 +43,7 @@ func (self *Criteria) AddSort(field string, sort int) *Criteria {
 	return self
 }
 
-func (self *Criteria) SetSort(sort map[string]int) *Criteria {
+func (self *Criteria) SetSort(sort map[string]int) ICriteria {
 	self.sort = sort
 	return self
 }
@@ -37,7 +52,7 @@ func (self *Criteria) GetSort() map[string]int {
 	return self.sort
 }
 
-func (self *Criteria) SetSelect(selects []string) *Criteria {
+func (self *Criteria) SetSelect(selects []string) ICriteria {
 	self.selects = selects
 	return self
 }
@@ -50,7 +65,7 @@ func (self *Criteria) GetLimit() int {
 	return self.limit
 }
 
-func (self *Criteria) SetLimit(limit int) *Criteria {
+func (self *Criteria) SetLimit(limit int) ICriteria {
 	self.limit = limit
 	return self
 }
@@ -59,7 +74,7 @@ func (self *Criteria) GetOffset() int {
 	return self.offset
 }
 
-func (self *Criteria) SetOffset(offset int) *Criteria {
+func (self *Criteria) SetOffset(offset int) ICriteria {
 	self.offset = offset
 	return self
 }
@@ -68,13 +83,13 @@ func (self *Criteria) GetConditions() Map {
 	return self.conditions
 }
 
-func (self *Criteria) SetConditions(conditions Map) *Criteria {
+func (self *Criteria) SetConditions(conditions Map) ICriteria {
 	self.conditions = conditions
 	return self
 }
 
 //add more opt later when it does need.
-func (self *Criteria) AddCond(field, opt string, value interface{}) *Criteria {
+func (self *Criteria) AddCond(field, opt string, value interface{}) ICriteria {
 	if opt == "==" {
 		self.conditions[field] = value
 	} else if opt == "!=" {

@@ -18,42 +18,10 @@ type User struct {
 
 func (self *User) Init() {
 	self.Model.Init()
+	self.Model.SetObj(self)
 	self.Model.SetCollectionName(self.CollectionName())
 }
 
 func (self *User) CollectionName() string {
 	return "user"
-}
-
-func (self *User) Validate() bool {
-	if !self.Model.Validate() {
-		return false
-	}
-
-	if !self.Profile.Validate() {
-		return false
-	}
-
-	// refType := reflect.TypeOf(self)
-	// refValue := reflect.ValueOf(self)
-	// if refType.Kind() == reflect.Ptr {
-	// 	refType = refType.Elem()
-	// 	refValue = refValue.Elem()
-	// }
-
-	// numField := refType.NumField()
-	// for i := 0; i < numField; i++ {
-	// 	field := refType.Field(i)
-	// 	if reflect.Struct != field.Type.Kind() || "Model" == field.Name {
-	// 		continue
-	// 	}
-
-	// 	if v, ok := refValue.Field(i).Interface().(mgorm.IValidater); ok {
-	// 		if !v.Validate() {
-	// 			return false
-	// 		}
-	// 	}
-	// }
-
-	return true
 }

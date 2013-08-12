@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	// "errors"
+	"errors"
 	"fmt"
 	"github.com/elsonwu/mgorm"
 	"net/http"
@@ -21,18 +21,18 @@ func main() {
 			fmt.Println(err)
 		}
 
-		// user.FullName = "Admin"
-		// user.On("BeforeSave", func() error {
-		// 	if "Admin" == user.FullName {
-		// 		return errors.New("You cannot use Admin")
-		// 	}
+		user.FullName = "Admin"
+		user.On("BeforeSave", func() error {
+			if "Admin" == user.FullName {
+				return errors.New("You cannot use Admin")
+			}
 
-		// 	return nil
-		// })
+			return nil
+		})
 
-		// if !mgorm.Save(user) {
-		// 	fmt.Println(user.GetErrors())
-		// }
+		if !mgorm.Save(user) {
+			fmt.Println(user.GetErrors())
+		}
 
 		// user.FullName = "Admin"
 		// user.On("TestEvent", func() error {
@@ -47,16 +47,16 @@ func main() {
 		// 	fmt.Println(err)
 		// }
 
-		criteria := mgorm.NewCriteria()
-		criteria.AddCond("fullname", "==", "elson wu")
-		//mgorm.FindAll(user, criteria).One(user)
-		err = mgorm.Find(user, criteria)
-		fmt.Println(err)
-		fmt.Println(user)
+		// criteria := mgorm.NewCriteria()
+		// criteria.AddCond("fullname", "==", "elson wu")
+		// //mgorm.FindAll(user, criteria).One(user)
+		// err = mgorm.Find(user, criteria)
+		// fmt.Println(err)
+		// fmt.Println(user)
 
 		// user.Email = "elsonwu@126.com"
 		// if !mgorm.Save(user) {
-		// 	fmt.Println("Save errors:", user.ErrorHandler().GetErrors())
+		// 	fmt.Println("Save errors:", user.ErrorHandlerr().GetErrors())
 		// }
 
 		//Find list:

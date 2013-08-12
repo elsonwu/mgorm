@@ -24,7 +24,7 @@ func DB() *mgo.Database {
 	return db
 }
 
-func FindAll(model IModel, criteria *Criteria) *Query {
+func FindAll(model IModel, criteria ICriteria) *Query {
 	if !model.HasInited() {
 		model.Init()
 	}
@@ -67,7 +67,7 @@ func FindAll(model IModel, criteria *Criteria) *Query {
 	return query
 }
 
-func Find(model IModel, criteria *Criteria) error {
+func Find(model IModel, criteria ICriteria) error {
 	criteria.SetLimit(1)
 	iter := FindAll(model, criteria).Iter()
 	defer iter.Close()

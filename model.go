@@ -4,10 +4,11 @@ import (
 	// "fmt"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
+	// "reflect"
 )
 
 type IModel interface {
-	IErrorHandle
+	IErrorHandler
 	IValidater
 	IEvent
 	IsNew() bool
@@ -24,7 +25,8 @@ type IModel interface {
 }
 
 type Model struct {
-	ErrorHandle    `bson:",inline" json:",inline"`
+	obj            IModel
+	ErrorHandler   `bson:",inline" json:",inline"`
 	Event          `bson:",inline" json:",inline"`
 	Id             bson.ObjectId `bson:"_id" json:"id"`
 	isNew          bool
@@ -39,6 +41,16 @@ func (self *Model) AfterFind() {
 
 func (self *Model) Validate() bool {
 	self.ClearErrors()
+
+	err := self.Emit("BeforeValidate")
+	if nil != err {
+		self.AddError(err.Error())
+	}
+
+	if !NewValidater(self.obj).Validate() {
+		return false
+	}
+
 	return true
 }
 
@@ -49,6 +61,10 @@ func (self *Model) BeforeSave() error {
 func (self *Model) AfterSave() {
 	self.Emit("AfterSave")
 	self.isNew = false
+}
+
+func (self *Model) SetObj(model IModel) {
+	self.obj = model
 }
 
 func (self *Model) Init() {
