@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	mgorm.Model `bson:",inline" json:",inline"`
+	mgorm.Model `bson:",inline" json:"-"`
 	FullName    string       `bson:"fullname" json:"fullname"`
 	FirstName   string       `bson:"first_name" json:"first_name"`
 	Password    string       `bson:"password" json:"-"`

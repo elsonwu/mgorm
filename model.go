@@ -32,9 +32,9 @@ type IModel interface {
 }
 
 type EmbeddedModel struct {
-	ErrorHandler `bson:",inline" json:",inline"`
-	Event        `bson:",inline" json:",inline"`
-	owner        IEmbeddedModel `bson:",inline" json:",inline"`
+	ErrorHandler `bson:",inline" json:"-"`
+	Event        `bson:",inline" json:"-"`
+	owner        IEmbeddedModel `bson:",inline" json:"-"`
 }
 
 func (self *EmbeddedModel) SetOwner(model IEmbeddedModel) {
@@ -58,7 +58,7 @@ func (self *EmbeddedModel) Validate() bool {
 }
 
 type Model struct {
-	EmbeddedModel
+	EmbeddedModel  `bson:",inline" json:"-"`
 	Id             bson.ObjectId `bson:"_id" json:"id"`
 	isNew          bool
 	collectionName string

@@ -83,7 +83,9 @@ func FindById(model IModel, id string) error {
 	return FindAll(model, criteria).Query().One(model)
 }
 
-func Update(model IModel) bool {
+func Update(model IModel, attributes Map) bool {
+	model.InitCollection()
+
 	if model.IsNew() {
 		model.AddError("the model is a new record")
 		return false
@@ -98,7 +100,13 @@ func Update(model IModel) bool {
 		return false
 	}
 
-	err := model.Collection().UpdateId(model.GetId(), model)
+	var err error
+	if nil == attributes {
+		err = model.Collection().UpdateId(model.GetId(), model)
+	} else {
+		err = model.Collection().UpdateId(model.GetId(), Map{"$set": attributes})
+	}
+
 	if nil != err {
 		model.AddError(err.Error())
 		return false
@@ -108,6 +116,8 @@ func Update(model IModel) bool {
 }
 
 func Insert(model IModel) bool {
+	model.InitCollection()
+
 	if !model.IsNew() {
 		model.AddError("the model is not a new record")
 		return false
@@ -127,7 +137,6 @@ func Insert(model IModel) bool {
 }
 
 func Save(model IModel) bool {
-
 	if !model.Validate() {
 		return false
 	}
@@ -142,7 +151,7 @@ func Save(model IModel) bool {
 	if model.IsNew() {
 		res = Insert(model)
 	} else {
-		res = Update(model)
+		res = Update(model, nil)
 	}
 
 	if res {

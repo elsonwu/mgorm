@@ -21,7 +21,9 @@ func main() {
 		}
 
 		user.FullName = "Admin"
-		user.Profile.PrimaryEmail = "111"
+		user.Profile.PrimaryEmail = "tet@test.com"
+		user.Profile.Website = "test.com"
+
 		// user.On("BeforeValidate", func() error {
 		// 	if "Admin" == user.FullName {
 		// 		return errors.New("You cannot use Admin")
@@ -30,9 +32,7 @@ func main() {
 		// 	return nil
 		// })
 
-		if !mgorm.Save(user) {
-			fmt.Println("errors:", user.GetErrors(), user.Profile.GetErrors())
-		}
+		mgorm.Update(user, mgorm.Map{"email": "eee@eee.com"})
 
 		// user.FullName = "Admin"
 		// user.On("TestEvent", func() error {
