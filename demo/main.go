@@ -31,7 +31,7 @@ func main() {
 		})
 
 		if !mgorm.Save(user) {
-			fmt.Println(user.GetErrors())
+			fmt.Println("errors:", user.GetErrors(), user.Profile.GetErrors())
 		}
 
 		// user.FullName = "Admin"
@@ -56,7 +56,7 @@ func main() {
 
 		// user.Email = "elsonwu@126.com"
 		// if !mgorm.Save(user) {
-		// 	fmt.Println("Save errors:", user.ErrorHandlerr().GetErrors())
+		// 	fmt.Println("Save errors:", user.ErrorHandler().GetErrors())
 		// }
 
 		//Find list:

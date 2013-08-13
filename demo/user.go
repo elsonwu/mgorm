@@ -12,7 +12,7 @@ type User struct {
 	FirstName   string       `bson:"first_name" json:"first_name"`
 	Password    string       `bson:"password" json:"-"`
 	LastName    string       `bson:"last_name" json:"last_name"`
-	Email       string       `bson:"email" json:"email"`
+	Email       string       `bson:"email" json:"email" rules:"email"`
 	Profile     *UserProfile `bson:"profile" json:"profile"`
 }
 

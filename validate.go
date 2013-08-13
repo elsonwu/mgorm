@@ -1,7 +1,6 @@
 package mgorm
 
 import (
-	// "fmt"
 	"reflect"
 )
 
@@ -14,6 +13,8 @@ func NewValidator(errorHandler IErrorHandler) IValidator {
 	validater.errorHandler = errorHandler
 	return validater
 }
+
+type ValidateFn func(fieldValue reflect.Value, fieldType reflect.StructField) error
 
 type Validator struct {
 	errorHandler IErrorHandler
@@ -29,19 +30,50 @@ func (self *Validator) Validate() bool {
 	}
 
 	numField := refType.NumField()
-	for i := 0; i < numField; i++ {
-		field := refType.Field(i)
 
-		if reflect.Ptr != field.Type.Kind() {
+	var hasError bool
+	for i := 0; i < numField; i++ {
+		fieldType := refType.Field(i)
+		fieldValue := refValue.Field(i)
+
+		var err error
+		if reflect.String == fieldType.Type.Kind() {
+			tag := fieldType.Tag.Get("rules")
+			switch tag {
+			case "email":
+				err = Validate(fieldValue, fieldType, EmailValidator)
+			case "url":
+				err = Validate(fieldValue, fieldType, UrlValidator)
+			default:
+				//do nothing
+			}
+
+			if nil != err {
+				self.errorHandler.AddError(err.Error())
+				hasError = true
+			}
+		}
+
+		if reflect.Ptr != fieldType.Type.Kind() {
 			continue
 		}
 
-		if v, ok := refValue.Field(i).Interface().(IValidator); ok {
+		if v, ok := fieldValue.Interface().(IValidator); ok {
 			if !v.Validate() {
-				return false
+				hasError = true
+			}
+		}
+
+		if v, ok := fieldValue.Interface().(IErrorHandler); ok {
+			if !NewValidator(v).Validate() {
+				hasError = true
 			}
 		}
 	}
 
-	return true
+	return hasError
+}
+
+func Validate(fieldValue reflect.Value, fieldType reflect.StructField, fn ValidateFn) error {
+	return fn(fieldValue, fieldType)
 }

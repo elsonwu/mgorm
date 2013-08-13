@@ -1,12 +1,15 @@
 package main
 
 import (
-// "fmt"
+	// "fmt"
+	"github.com/elsonwu/mgorm"
 )
 
 type UserProfile struct {
-	PrimaryEmail   string `bson:"primary_email" json:"primary_email"`
-	SecondaryEmail string `bson:"secondary_email" json:"secondary_email"`
+	mgorm.ErrorHandler
+	PrimaryEmail   string `bson:"primary_email" json:"primary_email" rules:"email"`
+	SecondaryEmail string `bson:"secondary_email" json:"secondary_email" rules:"email"`
+	Website        string `bson:"website" json:"website" rules:"url"`
 }
 
 func (self *UserProfile) Validate() bool {
