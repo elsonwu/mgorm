@@ -60,23 +60,27 @@ func (self *EmbeddedModel) Validate() bool {
 type Model struct {
 	EmbeddedModel  `bson:",inline" json:"-"`
 	Id             bson.ObjectId `bson:"_id" json:"id"`
-	isNew          bool
+	isOld          bool
 	collectionName string
 	inited         bool
 }
 
 func (self *Model) AfterFind() {
 	self.Emit("AfterFind")
-	self.isNew = false
+	self.isOld = true
 }
 
 func (self *Model) BeforeSave() error {
+	if self.IsNew() {
+		self.Id = bson.NewObjectId()
+	}
+
 	return self.Emit("BeforeSave")
 }
 
 func (self *Model) AfterSave() {
 	self.Emit("AfterSave")
-	self.isNew = false
+	self.isOld = true
 }
 
 func (self *Model) Init() {
@@ -92,7 +96,7 @@ func (self *Model) GetId() bson.ObjectId {
 }
 
 func (self *Model) IsNew() bool {
-	return self.isNew
+	return !self.isOld
 }
 
 func (self *Model) SetCollectionName(name string) {

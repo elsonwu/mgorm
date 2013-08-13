@@ -1,6 +1,7 @@
 package mgorm
 
 import (
+	// "fmt"
 	"reflect"
 )
 
@@ -59,13 +60,13 @@ func (self *Validator) Validate() bool {
 		}
 
 		if v, ok := fieldValue.Interface().(IValidator); ok {
-			if !v.Validate() {
+			if !fieldValue.IsNil() && !v.Validate() {
 				hasError = true
 			}
 		}
 
 		if v, ok := fieldValue.Interface().(IErrorHandler); ok {
-			if !NewValidator(v).Validate() {
+			if !fieldValue.IsNil() && !NewValidator(v).Validate() {
 				hasError = true
 			}
 		}

@@ -12,7 +12,7 @@ type IErrorHandler interface {
 }
 
 type ErrorHandler struct {
-	errors []error `bson:",omitempty" json:"-"`
+	errors []error `bson:",inline" json:"-"`
 }
 
 func (self *ErrorHandler) AddError(err string) {

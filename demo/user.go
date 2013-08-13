@@ -20,6 +20,10 @@ type User struct {
 func (self *User) Init() {
 	self.Model.Init()
 	self.InitCollection()
+	if nil == self.Profile {
+		self.Profile = new(UserProfile)
+	}
+
 	self.Profile.SetOwner(self)
 }
 

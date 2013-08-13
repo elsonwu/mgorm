@@ -13,16 +13,34 @@ func main() {
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 
 		user := new(User)
+		user.Model = mgorm.Model{}
+		user.Model.EmbeddedModel = mgorm.EmbeddedModel{}
+		user.Model.EmbeddedModel.ErrorHandler = mgorm.ErrorHandler{}
+		user.Model.EmbeddedModel.Event = mgorm.Event{}
+		user.Profile = &UserProfile{}
+		user.Profile.EmbeddedModel = mgorm.EmbeddedModel{}
+		user.Profile.EmbeddedModel.ErrorHandler = mgorm.ErrorHandler{}
+		user.Profile.EmbeddedModel.Event = mgorm.Event{}
 
-		//Find one:
-		err := mgorm.FindById(user, "51ffc45fad51987c28276e55")
-		if nil != err {
-			fmt.Println(err)
+		user.FirstName = "xxx"
+		user.Email = "xxx@xxx.com"
+		user.Profile.PrimaryEmail = "yyy@yyy.com"
+		user.Profile.SecondaryEmail = "zzz@zzz.com"
+		user.Profile.Website = "www.g.com"
+
+		if !mgorm.Save(user) {
+			fmt.Println(user.GetErrors(), user.Profile.GetErrors())
 		}
 
-		user.FullName = "Admin"
-		user.Profile.PrimaryEmail = "tet@test.com"
-		user.Profile.Website = "test.com"
+		//Find one:
+		// err := mgorm.FindById(user, "51ffc45fad51987c28276e55")
+		// if nil != err {
+		// 	fmt.Println(err)
+		// }
+
+		// user.FullName = "Admin"
+		// user.Profile.PrimaryEmail = "tet@test.com"
+		// user.Profile.Website = "test.com"
 
 		// user.On("BeforeValidate", func() error {
 		// 	if "Admin" == user.FullName {
@@ -31,8 +49,6 @@ func main() {
 
 		// 	return nil
 		// })
-
-		mgorm.Update(user, mgorm.Map{"email": "eee@eee.com"})
 
 		// user.FullName = "Admin"
 		// user.On("TestEvent", func() error {
@@ -46,6 +62,8 @@ func main() {
 		// if nil != err {
 		// 	fmt.Println(err)
 		// }
+
+		// mgorm.Update(user, mgorm.Map{"email": "eee@eee.com"})
 
 		// criteria := mgorm.NewCriteria()
 		// criteria.AddCond("fullname", "==", "elson wu")
@@ -64,10 +82,25 @@ func main() {
 		// criteria.SetLimit(3)
 		// criteria.AddSort("domain.domain", mgorm.CriteriaSortDesc)
 		// criteria.AddSort("domain.extra", mgorm.CriteriaSortAsc)
-		// iter := mgorm.FindAll(user, criteria).Iter()
+
 		// users := make([]User, 3)
+		// for i := 0; i < 3; i++ {
+		// 	users[i].On("AfterFind", func() error {
+		// 		fmt.Println("after find")
+
+		// 		return nil
+		// 	})
+		// }
+
+		// iter := mgorm.FindAll(user, criteria).Iter()
+		// user.On("AfterFind", func() error {
+		// 	fmt.Println("after find")
+		// 	return nil
+		// })
+
 		// i := 0
 		// for iter.Next(user) {
+		// 	user.AfterFind()
 		// 	users[i] = *user
 		// 	i = i + 1
 		// }
