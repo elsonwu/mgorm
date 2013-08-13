@@ -15,7 +15,11 @@ func (self *Query) Query() *mgo.Query {
 }
 
 func (self *Query) One(model IModel) {
-	self.query.One(model)
+	err := self.query.One(model)
+	if nil == err {
+		model.Init()
+		model.AfterFind()
+	}
 }
 
 func (self *Query) Iter() *Iter {

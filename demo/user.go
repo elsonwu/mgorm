@@ -2,6 +2,7 @@ package main
 
 import (
 	// "fmt"
+	// "errors"
 	"github.com/elsonwu/mgorm"
 	// "reflect"
 )
@@ -18,7 +19,19 @@ type User struct {
 
 func (self *User) Init() {
 	self.Model.Init()
-	self.Model.SetObj(self)
+	self.InitCollection()
+	self.Profile.SetOwner(self)
+}
+
+func (self *User) Validate() bool {
+	if !self.Model.Validate() {
+		return false
+	}
+
+	return mgorm.NewValidator(self).Validate()
+}
+
+func (self *User) InitCollection() {
 	self.Model.SetCollectionName(self.CollectionName())
 }
 

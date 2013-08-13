@@ -7,27 +7,58 @@ import (
 	// "reflect"
 )
 
-type IModel interface {
+type IEmbeddedModel interface {
 	IErrorHandler
 	IValidator
 	IEvent
-	IsNew() bool
 	Init()
+	SetOwner(IEmbeddedModel)
+	GetOwner() IEmbeddedModel
+}
+
+type IModel interface {
+	IEmbeddedModel
+	IsNew() bool
 	GetId() bson.ObjectId
 	AfterFind()
 	BeforeSave() error
 	AfterSave()
 	Collection() *mgo.Collection
 	CollectionName() string
+	InitCollection()
 	SetCollectionName(name string)
 	DB() *mgo.Database
 	HasInited() bool
 }
 
+type EmbeddedModel struct {
+	ErrorHandler `bson:",inline" json:",inline"`
+	Event        `bson:",inline" json:",inline"`
+	owner        IEmbeddedModel `bson:",inline" json:",inline"`
+}
+
+func (self *EmbeddedModel) SetOwner(model IEmbeddedModel) {
+	self.owner = model
+}
+
+func (self *EmbeddedModel) GetOwner() IEmbeddedModel {
+	return self.owner
+}
+
+func (self *EmbeddedModel) Validate() bool {
+	self.ClearErrors()
+
+	err := self.Emit("BeforeValidate")
+	if nil != err {
+		self.AddError(err.Error())
+		return false
+	}
+
+	return true
+}
+
 type Model struct {
-	obj            IModel
-	ErrorHandler   `bson:",inline" json:",inline"`
-	Event          `bson:",inline" json:",inline"`
+	EmbeddedModel
 	Id             bson.ObjectId `bson:"_id" json:"id"`
 	isNew          bool
 	collectionName string
@@ -39,21 +70,6 @@ func (self *Model) AfterFind() {
 	self.isNew = false
 }
 
-func (self *Model) Validate() bool {
-	self.ClearErrors()
-
-	err := self.Emit("BeforeValidate")
-	if nil != err {
-		self.AddError(err.Error())
-	}
-
-	if !NewValidator(self.obj).Validate() {
-		return false
-	}
-
-	return true
-}
-
 func (self *Model) BeforeSave() error {
 	return self.Emit("BeforeSave")
 }
@@ -61,10 +77,6 @@ func (self *Model) BeforeSave() error {
 func (self *Model) AfterSave() {
 	self.Emit("AfterSave")
 	self.isNew = false
-}
-
-func (self *Model) SetObj(model IModel) {
-	self.obj = model
 }
 
 func (self *Model) Init() {

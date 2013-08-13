@@ -8,21 +8,21 @@ type IValidator interface {
 	Validate() bool
 }
 
-func NewValidator(errorHandler IErrorHandler) IValidator {
+func NewValidator(embeddedModel IErrorHandler) IValidator {
 	validater := new(Validator)
-	validater.errorHandler = errorHandler
+	validater.embeddedModel = embeddedModel
 	return validater
 }
 
 type ValidateFn func(fieldValue reflect.Value, fieldType reflect.StructField) error
 
 type Validator struct {
-	errorHandler IErrorHandler
+	embeddedModel IErrorHandler
 }
 
 func (self *Validator) Validate() bool {
-	refType := reflect.TypeOf(self.errorHandler)
-	refValue := reflect.ValueOf(self.errorHandler)
+	refType := reflect.TypeOf(self.embeddedModel)
+	refValue := reflect.ValueOf(self.embeddedModel)
 
 	if refType.Kind() == reflect.Ptr {
 		refType = refType.Elem()
@@ -49,7 +49,7 @@ func (self *Validator) Validate() bool {
 			}
 
 			if nil != err {
-				self.errorHandler.AddError(err.Error())
+				self.embeddedModel.AddError(err.Error())
 				hasError = true
 			}
 		}

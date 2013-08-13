@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
+	// "errors"
 	"fmt"
 	"github.com/elsonwu/mgorm"
 	"net/http"
@@ -15,20 +15,20 @@ func main() {
 		user := new(User)
 
 		//Find one:
-
 		err := mgorm.FindById(user, "51ffc45fad51987c28276e55")
 		if nil != err {
 			fmt.Println(err)
 		}
 
 		user.FullName = "Admin"
-		user.On("BeforeSave", func() error {
-			if "Admin" == user.FullName {
-				return errors.New("You cannot use Admin")
-			}
+		user.Profile.PrimaryEmail = "111"
+		// user.On("BeforeValidate", func() error {
+		// 	if "Admin" == user.FullName {
+		// 		return errors.New("You cannot use Admin")
+		// 	}
 
-			return nil
-		})
+		// 	return nil
+		// })
 
 		if !mgorm.Save(user) {
 			fmt.Println("errors:", user.GetErrors(), user.Profile.GetErrors())

@@ -25,9 +25,7 @@ func DB() *mgo.Database {
 }
 
 func FindAll(model IModel, criteria ICriteria) *Query {
-	if !model.HasInited() {
-		model.Init()
-	}
+	model.InitCollection()
 
 	q := model.Collection().Find(criteria.GetConditions())
 	criteriaSelects := criteria.GetSelect()
@@ -82,14 +80,7 @@ func FindById(model IModel, id string) error {
 	criteria := NewCriteria()
 	criteria.AddCond("_id", "==", bson.ObjectIdHex(id))
 	criteria.SetLimit(1)
-	err := FindAll(model, criteria).Query().One(model)
-
-	if nil == err {
-		model.Init()
-		model.AfterFind()
-	}
-
-	return err
+	return FindAll(model, criteria).Query().One(model)
 }
 
 func Update(model IModel) bool {
@@ -100,6 +91,10 @@ func Update(model IModel) bool {
 
 	if "" == model.GetId().Hex() {
 		model.AddError("the id is empty")
+		return false
+	}
+
+	if model.HasErrors() {
 		return false
 	}
 
@@ -115,6 +110,10 @@ func Update(model IModel) bool {
 func Insert(model IModel) bool {
 	if !model.IsNew() {
 		model.AddError("the model is not a new record")
+		return false
+	}
+
+	if model.HasErrors() {
 		return false
 	}
 
