@@ -5,6 +5,7 @@ import (
 	// "fmt"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
+	"reflect"
 )
 
 var session *mgo.Session
@@ -159,4 +160,30 @@ func Save(model IModel) bool {
 	}
 
 	return res
+}
+
+func InitModel(model IModel) {
+
+	refType := reflect.TypeOf(model)
+	refValue := reflect.ValueOf(model)
+
+	if refType.Kind() == reflect.Ptr {
+		refType = refType.Elem()
+		refValue = refValue.Elem()
+	}
+
+	if refType.Kind() == reflect.Struct {
+		numField := refType.NumField()
+
+		for i := 0; i < numField; i++ {
+			fieldType := refType.Field(i)
+			fieldValue := refValue.Field(i)
+
+			if fieldValue.Kind() == reflect.Ptr {
+				fieldValue.Set(reflect.New(fieldType.Type.Elem()))
+			} else if fieldValue.Kind() == reflect.Struct {
+				fieldValue.Set(reflect.New(fieldType.Type).Elem())
+			}
+		}
+	}
 }

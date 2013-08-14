@@ -13,21 +13,7 @@ func main() {
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 
 		user := new(User)
-		user.Model = mgorm.Model{}
-		user.Model.EmbeddedModel = mgorm.EmbeddedModel{}
-		user.Model.EmbeddedModel.ErrorHandler = mgorm.ErrorHandler{}
-		user.Model.EmbeddedModel.Event = mgorm.Event{}
-		user.Profile = &UserProfile{}
-		user.Profile.EmbeddedModel = mgorm.EmbeddedModel{}
-		user.Profile.EmbeddedModel.ErrorHandler = mgorm.ErrorHandler{}
-		user.Profile.EmbeddedModel.Event = mgorm.Event{}
-
-		user.FirstName = "xxx"
-		user.Email = "xxx@xxx.com"
-		user.Profile.PrimaryEmail = "yyy@yyy.com"
-		user.Profile.SecondaryEmail = "zzz@zzz.com"
-		user.Profile.Website = "www.g.com"
-
+		mgorm.InitModel(user)
 		if !mgorm.Save(user) {
 			fmt.Println(user.GetErrors(), user.Profile.GetErrors())
 		}
