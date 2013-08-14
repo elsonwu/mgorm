@@ -50,7 +50,17 @@ All model are struct type
 	mgorm.FindAll(user, criteria).Iter().All(&users)
 	fmt.Println(users)
 	
-#Save One
+#Create One
+    user := new(User)
+    
+    //Important!
+    mgorm.InitModel(user)
+    
+    if !mgorm.Save(user) {
+		fmt.Println(user.GetErrors())
+	}
+		
+#Update One
 
     user.Email = "test@gmail.com"
 	if !mgorm.Save(user) {
