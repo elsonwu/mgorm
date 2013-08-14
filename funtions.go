@@ -138,7 +138,8 @@ func Insert(model IModel) bool {
 }
 
 func Save(model IModel) bool {
-	if !model.Validate() {
+
+	if !Validate(model) {
 		return false
 	}
 
@@ -162,28 +163,28 @@ func Save(model IModel) bool {
 	return res
 }
 
-func InitModel(model IModel) {
+// func InitModel(model IModel) {
 
-	refType := reflect.TypeOf(model)
-	refValue := reflect.ValueOf(model)
+// 	refType := reflect.TypeOf(model)
+// 	refValue := reflect.ValueOf(model)
 
-	if refType.Kind() == reflect.Ptr {
-		refType = refType.Elem()
-		refValue = refValue.Elem()
-	}
+// 	if refType.Kind() == reflect.Ptr {
+// 		refType = refType.Elem()
+// 		refValue = refValue.Elem()
+// 	}
 
-	if refType.Kind() == reflect.Struct {
-		numField := refType.NumField()
+// 	if refType.Kind() == reflect.Struct {
+// 		numField := refType.NumField()
 
-		for i := 0; i < numField; i++ {
-			fieldType := refType.Field(i)
-			fieldValue := refValue.Field(i)
+// 		for i := 0; i < numField; i++ {
+// 			fieldType := refType.Field(i)
+// 			fieldValue := refValue.Field(i)
 
-			if fieldValue.Kind() == reflect.Ptr {
-				fieldValue.Set(reflect.New(fieldType.Type.Elem()))
-			} else if fieldValue.Kind() == reflect.Struct {
-				fieldValue.Set(reflect.New(fieldType.Type).Elem())
-			}
-		}
-	}
-}
+// 			if fieldValue.Kind() == reflect.Ptr {
+// 				fieldValue.Set(reflect.New(fieldType.Type.Elem()))
+// 			} else if fieldValue.Kind() == reflect.Struct {
+// 				fieldValue.Set(reflect.New(fieldType.Type).Elem())
+// 			}
+// 		}
+// 	}
+// }

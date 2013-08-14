@@ -9,30 +9,17 @@ import (
 
 type User struct {
 	mgorm.Model `bson:",inline" json:"-"`
-	FullName    string       `bson:"fullname" json:"fullname"`
-	FirstName   string       `bson:"first_name" json:"first_name"`
-	Password    string       `bson:"password" json:"-"`
-	LastName    string       `bson:"last_name" json:"last_name"`
-	Email       string       `bson:"email" json:"email" rules:"email"`
-	Profile     *UserProfile `bson:"profile" json:"profile"`
+	FullName    string      `bson:"fullname" json:"fullname"`
+	FirstName   string      `bson:"first_name" json:"first_name"`
+	Password    string      `bson:"password" json:"-"`
+	LastName    string      `bson:"last_name" json:"last_name"`
+	Email       string      `bson:"email" json:"email" rules:"email"`
+	Profile     UserProfile `bson:"profile" json:"profile"`
 }
 
 func (self *User) Init() {
 	self.Model.Init()
 	self.InitCollection()
-	if nil == self.Profile {
-		self.Profile = new(UserProfile)
-	}
-
-	self.Profile.SetOwner(self)
-}
-
-func (self *User) Validate() bool {
-	if !self.Model.Validate() {
-		return false
-	}
-
-	return mgorm.NewValidator(self).Validate()
 }
 
 func (self *User) InitCollection() {

@@ -9,21 +9,11 @@ type IValidator interface {
 	Validate() bool
 }
 
-func NewValidator(embeddedModel IErrorHandler) IValidator {
-	validater := new(Validator)
-	validater.embeddedModel = embeddedModel
-	return validater
-}
-
 type ValidateFn func(fieldValue reflect.Value, fieldType reflect.StructField) error
 
-type Validator struct {
-	embeddedModel IErrorHandler
-}
-
-func (self *Validator) Validate() bool {
-	refType := reflect.TypeOf(self.embeddedModel)
-	refValue := reflect.ValueOf(self.embeddedModel)
+func Validate(model IEmbeddedModel) bool {
+	refType := reflect.TypeOf(model)
+	refValue := reflect.ValueOf(model)
 
 	if refType.Kind() == reflect.Ptr {
 		refType = refType.Elem()
@@ -32,7 +22,7 @@ func (self *Validator) Validate() bool {
 
 	numField := refType.NumField()
 
-	var hasError bool
+	isOK := true
 	for i := 0; i < numField; i++ {
 		fieldType := refType.Field(i)
 		fieldValue := refValue.Field(i)
@@ -42,39 +32,43 @@ func (self *Validator) Validate() bool {
 			tag := fieldType.Tag.Get("rules")
 			switch tag {
 			case "email":
-				err = Validate(fieldValue, fieldType, EmailValidator)
+				err = fieldValidate(fieldValue, fieldType, EmailValidator)
 			case "url":
-				err = Validate(fieldValue, fieldType, UrlValidator)
+				err = fieldValidate(fieldValue, fieldType, UrlValidator)
 			default:
 				//do nothing
 			}
 
 			if nil != err {
-				self.embeddedModel.AddError(err.Error())
-				hasError = true
+				model.AddError(err.Error())
+				isOK = false
 			}
 		}
 
-		if reflect.Ptr != fieldType.Type.Kind() {
+		if reflect.Ptr != fieldType.Type.Kind() && reflect.Struct != fieldType.Type.Kind() {
 			continue
 		}
 
+		if reflect.Struct == fieldType.Type.Kind() {
+			fieldValue = fieldValue.Addr()
+		}
+
 		if v, ok := fieldValue.Interface().(IValidator); ok {
-			if !fieldValue.IsNil() && !v.Validate() {
-				hasError = true
+			if !v.Validate() {
+				isOK = false
 			}
 		}
 
-		if v, ok := fieldValue.Interface().(IErrorHandler); ok {
-			if !fieldValue.IsNil() && !NewValidator(v).Validate() {
-				hasError = true
+		if v, ok := fieldValue.Interface().(IEmbeddedModel); ok {
+			if !Validate(v) {
+				isOK = false
 			}
 		}
 	}
 
-	return hasError
+	return isOK
 }
 
-func Validate(fieldValue reflect.Value, fieldType reflect.StructField, fn ValidateFn) error {
+func fieldValidate(fieldValue reflect.Value, fieldType reflect.StructField, fn ValidateFn) error {
 	return fn(fieldValue, fieldType)
 }

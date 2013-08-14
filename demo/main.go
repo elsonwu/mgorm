@@ -13,10 +13,13 @@ func main() {
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 
 		user := new(User)
-		mgorm.InitModel(user)
-		if !mgorm.Save(user) {
-			fmt.Println(user.GetErrors(), user.Profile.GetErrors())
-		}
+		user.Email = "xxx@xxx.com"
+		fmt.Println(mgorm.Validate(user))
+		fmt.Println(user.GetErrors(), user.Profile.GetErrors())
+
+		// if !mgorm.Save(user) {
+		// 	fmt.Println(user.GetErrors(), user.Profile.GetErrors())
+		// }
 
 		//Find one:
 		// err := mgorm.FindById(user, "51ffc45fad51987c28276e55")

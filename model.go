@@ -12,8 +12,6 @@ type IEmbeddedModel interface {
 	IValidator
 	IEvent
 	Init()
-	SetOwner(IEmbeddedModel)
-	GetOwner() IEmbeddedModel
 }
 
 type IModel interface {
@@ -34,15 +32,6 @@ type IModel interface {
 type EmbeddedModel struct {
 	ErrorHandler `bson:",inline" json:"-"`
 	Event        `bson:",inline" json:"-"`
-	owner        IEmbeddedModel `bson:",inline" json:"-"`
-}
-
-func (self *EmbeddedModel) SetOwner(model IEmbeddedModel) {
-	self.owner = model
-}
-
-func (self *EmbeddedModel) GetOwner() IEmbeddedModel {
-	return self.owner
 }
 
 func (self *EmbeddedModel) Validate() bool {
@@ -55,6 +44,10 @@ func (self *EmbeddedModel) Validate() bool {
 	}
 
 	return true
+}
+
+func (self *EmbeddedModel) Init() {
+
 }
 
 type Model struct {

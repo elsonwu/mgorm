@@ -15,7 +15,11 @@ All model are struct type
 
 	func (self *User) Init() {
 		self.Model.Init()
-		self.Model.SetCollectionName(self.CollectionName())
+		self.InitCollection()
+	}
+	
+	func (self *User) InitCollection() {
+	    self.Model.SetCollectionName(self.CollectionName())
 	}
 
 	func (self *User) CollectionName() string {
@@ -52,9 +56,6 @@ All model are struct type
 	
 #Create One
     user := new(User)
-    
-    //Important!
-    mgorm.InitModel(user)
     
     if !mgorm.Save(user) {
 		fmt.Println(user.GetErrors())
