@@ -10,7 +10,7 @@ All model are struct type
 	type User struct {
 		mgorm.Model `bson:",inline" json:",inline"` //embed all base methods
 		Username    string      `bson:"username" json:"username"`
-		Email       string      `bson:"email" json:"email" rules:"email"`
+		Email       string      `bson:"email" json:"email"`
 	}
 
 	func (self *User) Init() {
@@ -26,6 +26,20 @@ All model are struct type
 		return "user"
 	}
 
+#Embedded Model
+
+	type User struct {
+		mgorm.Model `bson:",inline" json:",inline"` //embed all base methods
+		Username    string      `bson:"username" json:"username"`
+		Email       string      `bson:"email" json:"email"`
+		Profile     UserProfile `bson:"profile" json:"profile"`
+	}
+	
+    type UserProfile struct {
+		mgorm.EmbeddedModel `bson:",inline" json:"-"` //use mgorm.EmbeddedModel
+		SecondaryEmail      string `bson:"secondary_email" json:"secondary_email"`
+		Website             string `bson:"website" json:"website"`
+	}
 
 #FindById
 
@@ -75,6 +89,47 @@ All model are struct type
 	if !mgorm.Save(user) {
 		fmt.Println(user.GetErrors())
 		//[Test the error]
+	}
+	
+#Validate
+	//use tag rules for field's validation
+	type User struct {
+		mgorm.Model `bson:",inline" json:",inline"` //embed all base methods
+		Username    string      `bson:"username" json:"username"`
+		Email       string      `bson:"email" json:"email" rules:"email"`
+		Profile     UserProfile `bson:"profile" json:"profile"`
+	}
+	
+    type UserProfile struct {
+		mgorm.EmbeddedModel `bson:",inline" json:"-"` //use mgorm.EmbeddedModel
+		SecondaryEmail      string `bson:"secondary_email" json:"secondary_email" rules:"email"`
+		Website             string `bson:"website" json:"website" rules:"url"`
+	}
+	
+	user := new(User)
+	if mgorm.Validate(user) {
+		fmt.Println(user.GetErrors(), user.Profile.GetErrors())
+	}
+	
+	//When you run Save method, it will call Validate method automatically.
+	if !user.Save() {
+		fmt.Println(user.GetErrors(), user.Profile.GetErrors())
+	}
+	
+	//You can also do more validate in your model, it will run when validating
+	func (self *User) Validate() bool {
+	
+		//Don't forget to call the parent's Validate
+	    if !self.Model.Validate() {
+	    	return false
+	    }
+	    
+	    if self.Username == "Admin" {
+	    	self.AddError("You cannot use Admin as your username")
+	    	return false
+	    }
+	    
+	    return true
 	}
 	
 #Event
