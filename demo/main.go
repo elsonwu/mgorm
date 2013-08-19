@@ -13,7 +13,10 @@ func main() {
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 
 		user := new(User)
+		criteria := new(mgorm.Criteria)
+		mgorm.Find(user, criteria)
 		user.Email = "xxx@xxx.com"
+		fmt.Printf("%+v\n", user)
 		fmt.Println(mgorm.Validate(user))
 		fmt.Println(user.GetErrors(), user.Profile.GetErrors())
 
