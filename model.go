@@ -2,7 +2,7 @@ package mgorm
 
 import (
 	// "fmt"
-	"labix.org/v2/mgo"
+	// "labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	// "reflect"
 )
@@ -21,11 +21,7 @@ type IModel interface {
 	AfterFind()
 	BeforeSave() error
 	AfterSave()
-	Collection() *mgo.Collection
 	CollectionName() string
-	InitCollection()
-	SetCollectionName(name string)
-	DB() *mgo.Database
 	HasInited() bool
 }
 
@@ -46,9 +42,7 @@ func (self *EmbeddedModel) Validate() bool {
 	return true
 }
 
-func (self *EmbeddedModel) Init() {
-
-}
+func (self *EmbeddedModel) Init() {}
 
 type Model struct {
 	EmbeddedModel  `bson:",inline" json:"-"`
@@ -90,25 +84,4 @@ func (self *Model) GetId() bson.ObjectId {
 
 func (self *Model) IsNew() bool {
 	return !self.isOld
-}
-
-func (self *Model) SetCollectionName(name string) {
-	self.collectionName = name
-}
-
-func (self *Model) CollectionName() string {
-	return self.collectionName
-}
-
-func (self *Model) DB() *mgo.Database {
-	return DB()
-}
-
-func (self *Model) Collection() *mgo.Collection {
-	if "" == self.CollectionName() {
-		panic("collection name cannot be blank")
-		return nil
-	}
-
-	return self.DB().C(self.CollectionName())
 }

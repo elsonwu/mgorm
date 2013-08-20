@@ -25,10 +25,12 @@ func DB() *mgo.Database {
 	return db
 }
 
-func FindAll(model IModel, criteria ICriteria) *Query {
-	model.InitCollection()
+func Collection(name string) *mgo.Collection {
+	return DB().C(name)
+}
 
-	q := model.Collection().Find(criteria.GetConditions())
+func FindAll(model IModel, criteria ICriteria) *Query {
+	q := Collection(model.CollectionName()).Find(criteria.GetConditions())
 	criteriaSelects := criteria.GetSelect()
 	if 0 < len(criteriaSelects) {
 		selects := map[string]bool{}
@@ -85,8 +87,6 @@ func FindById(model IModel, id string) error {
 }
 
 func Update(model IModel, attributes Map) bool {
-	model.InitCollection()
-
 	if model.IsNew() {
 		model.AddError("the model is a new record")
 		return false
@@ -103,9 +103,9 @@ func Update(model IModel, attributes Map) bool {
 
 	var err error
 	if nil == attributes {
-		err = model.Collection().UpdateId(model.GetId(), model)
+		err = Collection(model.CollectionName()).UpdateId(model.GetId(), model)
 	} else {
-		err = model.Collection().UpdateId(model.GetId(), Map{"$set": attributes})
+		err = Collection(model.CollectionName()).UpdateId(model.GetId(), Map{"$set": attributes})
 	}
 
 	if nil != err {
@@ -117,8 +117,6 @@ func Update(model IModel, attributes Map) bool {
 }
 
 func Insert(model IModel) bool {
-	model.InitCollection()
-
 	if !model.IsNew() {
 		model.AddError("the model is not a new record")
 		return false
@@ -128,7 +126,7 @@ func Insert(model IModel) bool {
 		return false
 	}
 
-	err := model.Collection().Insert(model)
+	err := Collection(model.CollectionName()).Insert(model)
 	if nil != err {
 		model.AddError(err.Error())
 		return false

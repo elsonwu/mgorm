@@ -17,15 +17,6 @@ type User struct {
 	Profile     UserProfile `bson:"profile" json:"profile"`
 }
 
-func (self *User) Init() {
-	self.Model.Init()
-	self.InitCollection()
-}
-
-func (self *User) InitCollection() {
-	self.Model.SetCollectionName(self.CollectionName())
-}
-
 func (self *User) CollectionName() string {
 	return "user"
 }

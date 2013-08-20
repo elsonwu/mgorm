@@ -13,15 +13,6 @@ All model are struct type
 		Email       string      `bson:"email" json:"email"`
 	}
 
-	func (self *User) Init() {
-		self.Model.Init()
-		self.InitCollection()
-	}
-	
-	func (self *User) InitCollection() {
-	    self.Model.SetCollectionName(self.CollectionName())
-	}
-
 	func (self *User) CollectionName() string {
 		return "user"
 	}
@@ -69,8 +60,8 @@ All model are struct type
 	fmt.Println(users)
 	
 #Create One
-    user := new(User)
     
+    user := new(User)
     if !mgorm.Save(user) {
 		fmt.Println(user.GetErrors())
 	}
@@ -85,7 +76,6 @@ All model are struct type
 #Error
 
 	user.AddError("Test the error")
-
 	if !mgorm.Save(user) {
 		fmt.Println(user.GetErrors())
 		//[Test the error]
