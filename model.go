@@ -11,7 +11,6 @@ type IEmbeddedModel interface {
 	IErrorHandler
 	IValidator
 	IEvent
-	Init()
 }
 
 type IModel interface {
@@ -22,7 +21,6 @@ type IModel interface {
 	BeforeSave() error
 	AfterSave()
 	CollectionName() string
-	HasInited() bool
 }
 
 type EmbeddedModel struct {
@@ -42,14 +40,11 @@ func (self *EmbeddedModel) Validate() bool {
 	return true
 }
 
-func (self *EmbeddedModel) Init() {}
-
 type Model struct {
 	EmbeddedModel  `bson:",inline" json:"-"`
 	Id             bson.ObjectId `bson:"_id" json:"id"`
 	isOld          bool
 	collectionName string
-	inited         bool
 }
 
 func (self *Model) AfterFind() {
@@ -68,14 +63,6 @@ func (self *Model) BeforeSave() error {
 func (self *Model) AfterSave() {
 	self.Emit("AfterSave")
 	self.isOld = true
-}
-
-func (self *Model) Init() {
-	self.inited = true
-}
-
-func (self *Model) HasInited() bool {
-	return self.inited
 }
 
 func (self *Model) GetId() bson.ObjectId {

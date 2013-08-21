@@ -7,7 +7,15 @@ import (
 
 type Query struct {
 	query *mgo.Query
-	iter  *Iter
+	iter  *mgo.Iter
+}
+
+func (self *Query) Iter() *mgo.Iter {
+	if nil == self.iter {
+		self.iter = self.query.Iter()
+	}
+
+	return self.iter
 }
 
 func (self *Query) Query() *mgo.Query {
@@ -17,19 +25,27 @@ func (self *Query) Query() *mgo.Query {
 func (self *Query) One(model IModel) {
 	err := self.query.One(model)
 	if nil == err {
-		model.Init()
 		model.AfterFind()
 	}
 }
 
-func (self *Query) Iter() *Iter {
-	if nil == self.iter {
-		self.iter = new(Iter)
-		self.iter.query = self
-		self.iter.iter = self.query.Iter()
+func (self *Query) Next(model IModel) bool {
+	b := self.Iter().Next(model)
+	model.AfterFind()
+
+	if !b {
+		self.Iter().Close()
 	}
 
-	return self.iter
+	return b
+}
+
+func (self *Query) All(models interface{}) {
+	self.Iter().All(models)
+}
+
+func (self *Query) Close() error {
+	return self.Iter().Close()
 }
 
 func (self *Query) Count() int {

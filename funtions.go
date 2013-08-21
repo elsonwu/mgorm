@@ -70,9 +70,9 @@ func FindAll(model IModel, criteria ICriteria) *Query {
 
 func Find(model IModel, criteria ICriteria) error {
 	criteria.SetLimit(1)
-	iter := FindAll(model, criteria).Iter()
-	defer iter.Close()
-	if iter.Next(model) {
+	query := FindAll(model, criteria)
+	defer query.Close()
+	if query.Next(model) {
 		return nil
 	}
 

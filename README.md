@@ -56,7 +56,7 @@ All model are struct type
 	criteria.SetSelect([]string{"email"})
 	criteria.AddSort("username", mgorm.CriteriaSortDesc)
 	users := make([]User, 3)
-	mgorm.FindAll(user, criteria).Iter().All(&users)
+	mgorm.FindAll(user, criteria).All(&users)
 	fmt.Println(users)
 	
 #Create One

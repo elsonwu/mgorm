@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	// "errors"
-	"fmt"
+	// "fmt"
 	"github.com/elsonwu/mgorm"
 	"net/http"
 )
@@ -12,13 +12,11 @@ func main() {
 	mgorm.InitDB("127.0.0.1", "testcn10")
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 
-		user := new(User)
+		users := make([]User, 10)
 		criteria := new(mgorm.Criteria)
-		mgorm.Find(user, criteria)
-		user.Email = "xxx@xxx.com"
-		fmt.Printf("%+v\n", user)
-		fmt.Println(mgorm.Validate(user))
-		fmt.Println(user.GetErrors(), user.Profile.GetErrors())
+		criteria.SetLimit(10)
+		criteria.AddSort("_id", mgorm.CriteriaSortAsc)
+		mgorm.FindAll(new(User), criteria).All(&users)
 
 		// if !mgorm.Save(user) {
 		// 	fmt.Println(user.GetErrors(), user.Profile.GetErrors())
@@ -84,14 +82,14 @@ func main() {
 		// 	})
 		// }
 
-		// iter := mgorm.FindAll(user, criteria).Iter()
+		// query := mgorm.FindAll(user, criteria)
 		// user.On("AfterFind", func() error {
 		// 	fmt.Println("after find")
 		// 	return nil
 		// })
 
 		// i := 0
-		// for iter.Next(user) {
+		// for query.Next(user) {
 		// 	user.AfterFind()
 		// 	users[i] = *user
 		// 	i = i + 1
@@ -106,7 +104,7 @@ func main() {
 		// 	fmt.Println(err)
 		// }
 
-		output, _ := json.Marshal(user)
+		output, _ := json.Marshal(users)
 		res.Header().Set("Content-Type", "application/json")
 		res.Write([]byte(output))
 	})
