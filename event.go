@@ -26,13 +26,19 @@ func (self *Event) On(event string, fn EventFn) {
 
 func (self *Event) Emit(event string) error {
 	event = strings.ToLower(event)
-	if nil != self.events {
-		length := len(self.events[event])
-		for i := 0; i < length; i++ {
-			err := self.events[event][i]()
-			if nil != err {
-				return err
-			}
+	if nil == self.events {
+		return nil
+	}
+
+	events, ok := self.events[event]
+	if !ok {
+		return nil
+	}
+
+	for _, fn := range events {
+		err := fn()
+		if nil != err {
+			return err
 		}
 	}
 
