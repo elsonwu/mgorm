@@ -1,10 +1,14 @@
+> labix.org/v2/mgo -> gopkg.in/mgo.v2
+
+------
+
 #Simple Model
 All model are struct type
 
     package main
 
     import (
-		"github.com/elsonwu/mgorm"
+		"github.com/hangxin1940/mgorm"
 	)
 
 	type User struct {
