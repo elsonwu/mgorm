@@ -9,7 +9,7 @@ default
 
     mgorm.InitDB("127.0.0.1", "testcn10")
     
- with DialInfo
+ with `DialInfo`
  
     dialInfo := &mgo.DialInfo{
         Addrs:    []string{"localhost:27017"},

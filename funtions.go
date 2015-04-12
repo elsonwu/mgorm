@@ -93,7 +93,7 @@ func FindById(model IModel, id string) error {
 	criteria := NewCriteria()
 	criteria.AddCond("_id", "==", bson.ObjectIdHex(id))
 	criteria.SetLimit(1)
-	return FindAll(model, criteria).Query().One(model)
+	return FindAll(model, criteria).One(model)
 }
 
 func Update(model IModel, attributes Map) bool {

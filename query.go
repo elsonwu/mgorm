@@ -22,11 +22,10 @@ func (self *Query) Query() *mgo.Query {
 	return self.query
 }
 
-func (self *Query) One(model IModel) {
+func (self *Query) One(model IModel) error{
 	err := self.query.One(model)
-	if nil == err {
-		model.AfterFind()
-	}
+	model.AfterFind()
+	return err
 }
 
 func (self *Query) Next(model IModel) bool {
