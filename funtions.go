@@ -21,6 +21,16 @@ func InitDB(connectString, dbName string) error {
 	return nil
 }
 
+func InitDBWithInfo(info *DialInfo) error {
+	session, err := mgo.DialWithInfo(info)
+	if err != nil {
+		return err
+	}
+
+	db = session.DB(info.Database)
+	return nil
+}
+
 func DB() *mgo.Database {
 	return db
 }
