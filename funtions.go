@@ -3,8 +3,8 @@ package mgorm
 import (
 	"errors"
 	// "fmt"
-	"labix.org/v2/mgo"
-	"labix.org/v2/mgo/bson"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	// "reflect"
 )
 
@@ -18,6 +18,16 @@ func InitDB(connectString, dbName string) error {
 	}
 
 	db = session.DB(dbName)
+	return nil
+}
+
+func InitDBWithInfo(info *mgo.DialInfo) error {
+	session, err := mgo.DialWithInfo(info)
+	if err != nil {
+		return err
+	}
+
+	db = session.DB(info.Database)
 	return nil
 }
 
@@ -83,7 +93,7 @@ func FindById(model IModel, id string) error {
 	criteria := NewCriteria()
 	criteria.AddCond("_id", "==", bson.ObjectIdHex(id))
 	criteria.SetLimit(1)
-	return FindAll(model, criteria).Query().One(model)
+	return FindAll(model, criteria).One(model)
 }
 
 func Update(model IModel, attributes Map) bool {

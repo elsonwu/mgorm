@@ -3,7 +3,7 @@ package main
 import (
 	// "fmt"
 	// "errors"
-	"github.com/elsonwu/mgorm"
+	"github.com/hangxin1940/mgorm"
 )
 
 type UserProfile struct {

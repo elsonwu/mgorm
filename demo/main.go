@@ -4,9 +4,33 @@ import (
 	"encoding/json"
 	// "errors"
 	// "fmt"
-	"github.com/elsonwu/mgorm"
+	"github.com/hangxin1940/mgorm"
 	"net/http"
 )
+
+type User struct {
+	mgorm.Model `bson:",inline"`
+	FullName    string      `bson:"fullname" json:"fullname"`
+	FirstName   string      `bson:"first_name" json:"first_name"`
+	Password    string      `bson:"password" json:"-"`
+	LastName    string      `bson:"last_name" json:"last_name"`
+	Email       string      `bson:"email" json:"email" rules:"email"`
+	Profile     UserProfile `bson:"profile" json:"profile"`
+}
+
+func (self *User) CollectionName() string {
+	return "user"
+}
+
+
+type UserProfile struct {
+	mgorm.EmbeddedModel `bson:",inline" json:"-"`
+	PrimaryEmail        string `bson:"primary_email" json:"primary_email" rules:"email"`
+	SecondaryEmail      string `bson:"secondary_email" json:"secondary_email" rules:"email"`
+	Website             string `bson:"website" json:"website" rules:"url"`
+}
+
+
 
 func main() {
 	mgorm.InitDB("127.0.0.1", "testcn10")

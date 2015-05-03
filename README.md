@@ -1,10 +1,33 @@
+> labix.org/v2/mgo -> gopkg.in/mgo.v2
+
+> add `InitDBWithInfo` function
+
+------
+
+#Connect db
+default
+
+    mgorm.InitDB("127.0.0.1", "testcn10")
+    
+ with `DialInfo`
+ 
+    dialInfo := &mgo.DialInfo{
+        Addrs:    []string{"localhost:27017"},
+        Timeout:  60 * time.Second,
+        Database: "testcn10",
+        Username: "usr",
+        Password: "passwd1",
+    }
+
+    mgorm.InitDBWithInfo(dialInfo)
+
 #Simple Model
 All model are struct type
 
     package main
 
     import (
-		"github.com/elsonwu/mgorm"
+		"github.com/hangxin1940/mgorm"
 	)
 
 	type User struct {
